@@ -1,0 +1,14 @@
+{
+  "allowed_image_types": "jpg,jpeg,png,webp,gif",
+  "app_name": "MiniSocial",
+  "app_version": "1.0.0",
+  "auto_hide_post_report_threshold": 5,
+  "default_avatar_url": "",
+  "maintenance_message": "Hệ thống đang bảo trì, vui lòng quay lại sau.",
+  "maintenance_mode": false,
+  "max_group_members": 500,
+  "max_groups_per_user": 2,
+  "max_images_per_post": 10,
+  "max_post_length": 5000,
+  "max_upload_size_mb": 10
+}

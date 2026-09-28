@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "60225260078",
+    "project_id": "minisocial-52902",
+    "storage_bucket": "minisocial-52902.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:60225260078:android:9bd075e7d129e16cd9edbf",
+        "android_client_info": {
+          "package_name": "com.example.minisocial_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZlwKlezrAmmYHw0StyIfrpXJy1pzYiOk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
