@@ -41,10 +41,14 @@ export default function UserManagementPage() {
                 id: u._id,
                 username: u.username,
                 email: u.email,
-                role: u.role || "user",
-                status: u.isBlocked ? "banned" : "active",
-                created: u.createdAt
-                    ? new Date(u.createdAt).toISOString().split("T")[0]
+                role: Array.isArray(u.roles_admin) && u.roles_admin.includes("ADMIN")
+                    ? "admin"
+                    : Array.isArray(u.roles_admin) && u.roles_admin.includes("MODERATOR")
+                        ? "moderator"
+                        : "user",
+                status: u.status === "BLOCKED" ? "banned" : "active",
+                created: u.created_at
+                    ? new Date(u.created_at).toISOString().split("T")[0]
                     : "-",
             }))
 
