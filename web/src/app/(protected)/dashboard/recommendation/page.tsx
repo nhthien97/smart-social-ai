@@ -723,11 +723,17 @@ export default function RecommendationPage() {
                             <p className="text-xs text-gray-500">@{recUserInfo.username} · {recUserInfo.email}</p>
                         </div>
                         <span className={`ml-auto shrink-0 text-xs px-2.5 py-1 rounded-full font-medium ${
-                            recUserInfo.roles_admin === 'ADMIN' ? 'bg-rose-100 text-rose-700'
-                            : recUserInfo.roles_admin === 'MODERATOR' ? 'bg-amber-100 text-amber-700'
-                            : 'bg-gray-100 text-gray-600'
+                            Array.isArray(recUserInfo.roles_admin) && recUserInfo.roles_admin.includes('ADMIN')
+                                ? 'bg-rose-100 text-rose-700'
+                                : Array.isArray(recUserInfo.roles_admin) && recUserInfo.roles_admin.includes('MODERATOR')
+                                    ? 'bg-amber-100 text-amber-700'
+                                    : 'bg-gray-100 text-gray-600'
                         }`}>
-                            {recUserInfo.roles_admin || 'user'}
+                            {Array.isArray(recUserInfo.roles_admin) && recUserInfo.roles_admin.includes('ADMIN')
+                                ? 'ADMIN'
+                                : Array.isArray(recUserInfo.roles_admin) && recUserInfo.roles_admin.includes('MODERATOR')
+                                    ? 'MODERATOR'
+                                    : 'user'}
                         </span>
                     </div>
                 )}
