@@ -7,7 +7,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const MONGODB_URL = process.env.MONGODB_URL;
-const DB_NAME = 'minisocial';
+const DB_NAME = 'test';
 
 const defaults = [
     // ── App General ──────────────────────────────────────────────────────────

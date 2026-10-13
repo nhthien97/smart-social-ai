@@ -24,34 +24,33 @@ class DefaultFirebaseOptions {
   }
 
   // ===== WEB =====
+
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAu5iOoEgtYviT2vsl0Dpr2bxvJRrqqQvA',
-    appId: '1:60225260078:web:f549668a3b77e624d9edbf',
-    messagingSenderId: '60225260078',
-    projectId: 'minisocial-52902',
-    authDomain: 'minisocial-52902.firebaseapp.com',
-    databaseURL: 'https://minisocial-52902-default-rtdb.firebaseio.com',
-    storageBucket: 'minisocial-52902.firebasestorage.app',
-    measurementId: 'G-746R52KLWR',
+    apiKey: 'AIzaSyDVdKdj3lL1vEnUIWKKYZJ8aV6N_GHqNS8',
+    appId: '1:1056551949535:web:19eed13eb5b566c00ac56a',
+    messagingSenderId: '1056551949535',
+    projectId: 'smart-social-ai-3bb8c',
+    authDomain: 'smart-social-ai-3bb8c.firebaseapp.com',
+    storageBucket: 'smart-social-ai-3bb8c.firebasestorage.app',
   );
-
   // ===== ANDROID =====
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBZlwKlezrAmmYHw0StyIfrpXJy1pzYiOk',
-    appId: '1:60225260078:android:9bd075e7d129e16cd9edbf',
-    messagingSenderId: '60225260078',
-    projectId: 'minisocial-52902',
-    storageBucket: 'minisocial-52902.firebasestorage.app',
-  );
 
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyA_owbyqqygIMfC9g_zjhgw4Q48rhKxqvc',
+    appId: '1:1056551949535:android:d6555d7a19a83bf30ac56a',
+    messagingSenderId: '1056551949535',
+    projectId: 'smart-social-ai-3bb8c',
+    storageBucket: 'smart-social-ai-3bb8c.firebasestorage.app',
+  );
   // ===== iOS =====
   // TODO: Thêm config iOS nếu cần
+
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: '60225260078',
-    projectId: 'minisocial-52902',
-    storageBucket: 'minisocial-52902.firebasestorage.app',
+    apiKey: 'AIzaSyDWruSaZWH04SG-7_jODTL5zh8VTQG9gbQ',
+    appId: '1:1056551949535:ios:40c3dec9ab60e5080ac56a',
+    messagingSenderId: '1056551949535',
+    projectId: 'smart-social-ai-3bb8c',
+    storageBucket: 'smart-social-ai-3bb8c.firebasestorage.app',
     iosBundleId: 'com.example.minisocialFlutter',
   );
 }
