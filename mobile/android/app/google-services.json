@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "60225260078",
-    "project_id": "minisocial-52902",
-    "storage_bucket": "minisocial-52902.firebasestorage.app"
+    "project_number": "1056551949535",
+    "project_id": "smart-social-ai-3bb8c",
+    "storage_bucket": "smart-social-ai-3bb8c.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:60225260078:android:9bd075e7d129e16cd9edbf",
+        "mobilesdk_app_id": "1:1056551949535:android:d6555d7a19a83bf30ac56a",
         "android_client_info": {
           "package_name": "com.example.minisocial_flutter"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBZlwKlezrAmmYHw0StyIfrpXJy1pzYiOk"
+          "current_key": "AIzaSyA_owbyqqygIMfC9g_zjhgw4Q48rhKxqvc"
         }
       ],
       "services": {

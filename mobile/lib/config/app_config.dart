@@ -1,24 +1,22 @@
-// lib/config/app_config.dart
 
 import 'package:flutter/foundation.dart';
 
 class AppConfig {
-  // API Base URL (Render) - bật lại khi push code
-
+  // Backend API URL (GitHub Codespaces)
   static const String apiBaseUrl =
-      'https://legendary-trout-4j9vwx775rjxf5g9x-3001.app.github.dev/api/v1';
+      'https://fluffy-goldfish-q7g4pwqqj5jwcxj9q-3001.app.github.dev/api/v1';
 
-  // API Base URL (Local) - để test xem log
+  // Public settings endpoint
+  static const String flutterConfigUrl =
+      'https://fluffy-goldfish-q7g4pwqqj5jwcxj9q-3001.app.github.dev/api/v1/settings/public';
 
-  // static const String apiBaseUrl = 'http://localhost:3001/api/v1';
+  // ML Server URL (chưa thay đổi, cần xác minh riêng)
+  static const String mlBaseUrl =
+      'https://minisocial-recomendation-system.onrender.com';
 
-  // Public settings endpoint (fallback config source)
-  static const String flutterConfigUrl = 'https://legendary-trout-4j9vwx775rjxf5g9x-3001.app.github.dev/api/v1/settings/public';
-
-  // ML Server URL (recommendation system)
-  static const String mlBaseUrl = 'https://minisocial-recomendation-system.onrender.com';
-
-  // static const String mlBaseUrl = 'http://localhost:8000';
+  // Local development URLs (chỉ dùng khi cần kiểm thử cục bộ)
+  // static const String localApiBaseUrl = 'http://localhost:3001/api/v1';
+  // static const String localMlBaseUrl = 'http://localhost:8000';
 
   static const String appName = 'MiniSocial';
   static const String appVersion = '1.0.5';

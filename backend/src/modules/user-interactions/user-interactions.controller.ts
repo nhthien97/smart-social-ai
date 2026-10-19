@@ -3,7 +3,7 @@ import { UserInteractionsService } from './user-interactions.service';
 
 // Endpoint để Python ML Server lấy dữ liệu training
 // Bảo vệ bằng API key đơn giản trong production
-@Controller('api/v1/interactions')
+@Controller('interactions')
 export class UserInteractionsController {
     constructor(private readonly service: UserInteractionsService) {}
 
