@@ -76,6 +76,10 @@
       "ts"
     ],
     "rootDir": "src",
+    "moduleNameMapper": {
+      "^modules/(.*)$": "<rootDir>/modules/$1",
+      "^common/(.*)$": "<rootDir>/common/$1"
+    },
     "testMatch": [
       "**/tests/**/*.spec.ts",
       "**/app.controller.spec.ts"
