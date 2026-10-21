@@ -1,5 +1,4 @@
-﻿
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConversationParticipant, ParticipantRole } from './schemas/conversation-participants.scheme';
@@ -10,6 +9,8 @@ import { FirebaseService } from '../../common/services/firebase.service';
 
 @Injectable()
 export class ConversationParticipantsService {
+
+    private readonly logger = new Logger(ConversationParticipantsService.name);
     constructor(
         @InjectModel(ConversationParticipant.name) private participantModel: Model<ConversationParticipant>,
         @InjectModel(Conversation.name) private conversationModel: Model<Conversation>,
@@ -17,6 +18,55 @@ export class ConversationParticipantsService {
         @InjectModel('User') private userModel: Model<any>,
         private readonly firebaseService: FirebaseService,
     ) { }
+        // Đồng bộ danh sách thành viên hiện tại lên Firestore
+    private async syncParticipantsToFirestore(convId: string): Promise<void> {
+        try {
+            const firestore = this.firebaseService.getFirestore();
+            if (!firestore) {
+                this.logger.warn(
+                    `Firestore chưa sẵn sàng; bỏ qua đồng bộ thành viên: ${convId}`,
+                );
+                return;
+            }
+
+            const [conv, participants] = await Promise.all([
+                this.conversationModel.findById(convId).lean().exec(),
+                this.participantModel
+                    .find({ conv_id: convId, left_at: null })
+                    .select('user_id')
+                    .lean()
+                    .exec(),
+            ]);
+
+            if (!conv) {
+                this.logger.warn(
+                    `Không tìm thấy conversation ${convId} khi đồng bộ Firestore`,
+                );
+                return;
+            }
+
+            const participantIds = participants.map(
+                (participant) => participant.user_id.toString(),
+            );
+
+            await firestore.collection('chats').doc(convId).set(
+                {
+                    participant_ids: participantIds,
+                    type: conv.type,
+                    name: conv.name ?? null,
+                    avatar_url: conv.avatar_url ?? null,
+                },
+                { merge: true },
+            );
+        } catch (error) {
+            const message =
+                error instanceof Error ? error.message : String(error);
+
+            this.logger.error(
+                `Đồng bộ thành viên Firestore thất bại cho ${convId}: ${message}`,
+            );
+        }
+    }
 
     // ── Lấy danh sách thành viên ───────────────────────────────────────────
     async getMembers(convId: string): Promise<any[]> {
@@ -102,6 +152,8 @@ export class ConversationParticipantsService {
             });
         } catch {}
 
+        await this.syncParticipantsToFirestore(convId);
+
         return participant;
     }
 
@@ -126,6 +178,8 @@ export class ConversationParticipantsService {
 
         target.left_at = new Date();
         await target.save();
+
+        await this.syncParticipantsToFirestore(convId);
 
         // System message
         const removedUser = await this.userModel.findById(targetUserId).select('full_name').lean().exec();
@@ -154,6 +208,8 @@ export class ConversationParticipantsService {
 
         participant.left_at = new Date();
         await participant.save();
+
+        await this.syncParticipantsToFirestore(convId);
 
         const user = await this.userModel.findById(userId).select('full_name').lean().exec();
         await new this.messageModel({
