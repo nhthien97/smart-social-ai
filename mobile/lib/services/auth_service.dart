@@ -117,7 +117,30 @@ class AuthService {
   }
 
   Future<void> signInFirebase() async {
-    if (isFirebaseInitialized) {
+    if (!isFirebaseInitialized) return;
+
+    try {
+      await _apiService.loadToken();
+
+      final response = await _apiService.get('/auth/firebase-token');
+      final firebaseToken = response.data?['firebaseToken'];
+
+      if (firebaseToken is! String || firebaseToken.isEmpty) {
+        if (kDebugMode) {
+          debugPrint('Firebase sign-in skipped: custom token unavailable');
+        }
+        return;
+      }
+
+      await FirebaseAuth.instance.signInWithCustomToken(firebaseToken);
+
+      if (kDebugMode) {
+        debugPrint('Firebase Auth sign-in successful');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Firebase Auth sign-in failed: $e');
+      }
     }
   }
 
