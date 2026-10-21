@@ -35,7 +35,7 @@ class DefaultFirebaseOptions {
 
     // ===== ANDROID =====
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'LẤY_GIÁ_TRỊ_CURRENT_KEY_TỪ_google-services.json',
+    apiKey: 'AIzaSyA_owbyqqygIMfC9g_zjhgw4Q48rhKxqvc',
     appId: '1:1056551949535:android:d6555d7a19a83bf30ac56a',
     messagingSenderId: '1056551949535',
     projectId: 'smart-social-ai-3bb8c',
