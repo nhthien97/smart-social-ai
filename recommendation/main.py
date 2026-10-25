@@ -190,3 +190,69 @@ async def interaction_stats():
             status_code=500,
             detail="Không thể thống kê dữ liệu tương tác.",
         )
+@app.get("/diagnostics/recommendations")
+async def recommendation_cache_diagnostics(
+    user_id: str = Query(..., min_length=1),
+):
+    """Chẩn đoán cache Recommendation; chỉ đọc dữ liệu."""
+
+    try:
+        db = get_db()
+        collection = db["user_recommendations"]
+        now = datetime.now(timezone.utc)
+
+        total = await collection.count_documents({})
+        active = await collection.count_documents(
+            {"expires_at": {"$gt": now}}
+        )
+        expired = await collection.count_documents(
+            {"expires_at": {"$lte": now}}
+        )
+
+        user_query = {"user_id": str(user_id)}
+        user_total = await collection.count_documents(user_query)
+        user_active = await collection.count_documents(
+            {
+                "user_id": str(user_id),
+                "expires_at": {"$gt": now},
+            }
+        )
+        user_expired = await collection.count_documents(
+            {
+                "user_id": str(user_id),
+                "expires_at": {"$lte": now},
+            }
+        )
+
+        latest = await collection.find_one(
+            user_query,
+            {
+                "_id": 0,
+                "generated_at": 1,
+                "expires_at": 1,
+                "rank": 1,
+            },
+            sort=[("generated_at", -1)],
+        )
+
+        return {
+            "checked_at": now,
+            "cache": {
+                "total": total,
+                "active": active,
+                "expired": expired,
+            },
+            "user": {
+                "user_id": str(user_id),
+                "total": user_total,
+                "active": user_active,
+                "expired": user_expired,
+                "latest_record": latest,
+            },
+        }
+    except Exception:
+        logger.exception("Chẩn đoán cache Recommendation thất bại.")
+        raise HTTPException(
+            status_code=500,
+            detail="Không thể chẩn đoán cache Recommendation.",
+        )
