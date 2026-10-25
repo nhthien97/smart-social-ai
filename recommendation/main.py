@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -30,26 +31,36 @@ RETRAIN_CRON = os.getenv("RETRAIN_CRON", "0 */6 * * *")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Khởi tạo scheduler và đóng tài nguyên khi ứng dụng dừng."""
+    """Khởi động API trước, huấn luyện Recommendation ở nền."""
 
     start_scheduler(RETRAIN_CRON)
 
-    # Huấn luyện ban đầu là tác vụ best-effort.
-    # Nếu MongoDB hoặc dữ liệu chưa sẵn sàng, API vẫn có thể khởi động.
-    try:
-        result = await train_and_save()
-        logger.info("Huấn luyện Recommendation lúc khởi động: %s", result)
-    except Exception:
-        logger.exception(
-            "Huấn luyện ban đầu thất bại; API vẫn tiếp tục khởi động."
-        )
+    async def initial_training():
+        try:
+            result = await train_and_save()
+            logger.info(
+                "Huấn luyện Recommendation lúc khởi động: %s",
+                result,
+            )
+        except Exception:
+            logger.exception(
+                "Huấn luyện ban đầu thất bại; API vẫn tiếp tục hoạt động."
+            )
+
+    training_task = asyncio.create_task(initial_training())
 
     try:
         yield
     finally:
+        if not training_task.done():
+            training_task.cancel()
+            try:
+                await training_task
+            except asyncio.CancelledError:
+                pass
+
         stop_scheduler()
         await close_db()
-
 
 app = FastAPI(
     title="Mini Social Recommendation API",
