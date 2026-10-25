@@ -63,8 +63,8 @@ async def lifespan(app: FastAPI):
         await close_db()
 
 app = FastAPI(
-    title="Mini Social Recommendation API",
-    description="Dịch vụ gợi ý bài viết cho Mini Social.",
+    title="Smart Social AI Recommendation API",
+    description="Dịch vụ gợi ý bài viết cho Smart Social AI.",
     version="1.0.0",
     lifespan=lifespan,
 )
