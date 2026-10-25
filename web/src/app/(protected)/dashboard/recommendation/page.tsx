@@ -453,22 +453,22 @@ export default function RecommendationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <MetricCard
                         label="Tổng lượt tương tác"
-                        value={stats?.total_interactions ?? "—"}
+                        value={stats?.total_records ?? "—"}
                         sub="like · view · comment · share"
                         icon={MousePointerClick}
                         color="bg-indigo-500"
                     />
                     <MetricCard
-                        label="Users đã tương tác"
-                        value={stats?.unique_users ?? "—"}
-                        sub="unique user_id"
+                        label="Cặp người dùng - bài viết"
+                        value={stats?.user_post_pairs ?? "—"}
+                        sub="Số cặp tương tác sau xử lý"
                         icon={Users}
                         color="bg-blue-500"
                     />
                     <MetricCard
-                        label="Bài viết được tương tác"
-                        value={stats?.unique_posts ?? "—"}
-                        sub="unique post_id"
+                        label="Lượt Like"
+                        value={stats?.by_type?.like ?? 0}
+                        sub={`Comment: ${stats?.by_type?.comment ?? 0} · Share: ${stats?.by_type?.share ?? 0} · Report: ${stats?.by_type?.report ?? 0}`}
                         icon={FileText}
                         color="bg-violet-500"
                     />

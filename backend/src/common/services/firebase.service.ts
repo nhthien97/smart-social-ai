@@ -252,6 +252,47 @@ export class FirebaseService implements OnModuleInit {
         }
     }
 
+    // Chuẩn hóa dữ liệu trước khi ghi vào Firestore
+    private normalizeFirestoreData(value: any): any {
+        if (value === null || value === undefined) {
+            return value;
+        }
+
+        // Giữ nguyên Date để Firestore xử lý timestamp đúng cách
+        if (value instanceof Date) {
+            return value;
+        }
+
+        if (value instanceof admin.firestore.Timestamp) {
+            return value;
+        }
+
+        if (Array.isArray(value)) {
+            return value.map((item) => this.normalizeFirestoreData(item));
+        }
+
+        if (typeof value === 'object') {
+            // Chuyển MongoDB ObjectId thành chuỗi
+            if (
+                value._bsontype === 'ObjectId' &&
+                typeof value.toHexString === 'function'
+            ) {
+                return value.toHexString();
+            }
+
+            // Chuẩn hóa đệ quy các trường lồng nhau
+            const result: Record<string, any> = {};
+            for (const [key, item] of Object.entries(value)) {
+                result[key] = this.normalizeFirestoreData(item);
+            }
+
+            return result;
+        }
+
+        return value;
+    }
+
+
     // Ghi tin nhắn vào Firestore chats/{convId}/messages/{msgId}
     async writeMessageToFirestore(data: {
         msgId: string;
@@ -282,11 +323,12 @@ export class FirebaseService implements OnModuleInit {
                 .doc(data.convId)
                 .collection('messages')
                 .doc(data.msgId);
+
             await ref.set({
                 _id: data.msgId,
                 conv_id: data.convId,
                 sender_id: data.senderId,
-                sender_info: data.senderInfo ?? null,
+                sender_info: this.normalizeFirestoreData(data.senderInfo ?? null),
                 content: data.content,
                 message_type: data.messageType,
                 participant_ids: data.participantIds,
@@ -296,12 +338,13 @@ export class FirebaseService implements OnModuleInit {
                 file_size: data.fileSize ?? 0,
                 is_recalled: data.isRecalled ?? false,
                 reply_to_id: data.replyToId ?? null,
-                reply_to: data.replyTo ?? null,
-                shared_post_info: data.sharedPostInfo ?? null,
+                reply_to: this.normalizeFirestoreData(data.replyTo ?? null),
+                shared_post_info: this.normalizeFirestoreData(data.sharedPostInfo ?? null),
                 created_at: data.createdAt
                     ? admin.firestore.Timestamp.fromDate(data.createdAt)
                     : admin.firestore.FieldValue.serverTimestamp(),
             });
+
             this.logger.log(`[writeMessage] Successfully wrote chats/${data.convId}/messages/${data.msgId}`);
         } catch (error) {
             this.logger.error(`[writeMessage] Failed chats/${data.convId}/messages/${data.msgId}:`, error.message);

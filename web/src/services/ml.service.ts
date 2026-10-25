@@ -9,9 +9,9 @@ export interface MLHealth {
 }
 
 export interface MLStats {
-  total_interactions: number
-  unique_users: number
-  unique_posts: number
+  total_records: number
+  user_post_pairs: number
+  by_type: Record<string, number>
 }
 
 export interface MLEvalMetrics {
