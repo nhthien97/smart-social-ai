@@ -256,3 +256,40 @@ async def recommendation_cache_diagnostics(
             status_code=500,
             detail="Không thể chẩn đoán cache Recommendation.",
         )
+        
+@app.get("/diagnostics/user-interactions")
+async def user_interaction_diagnostics(
+    user_id: str = Query(..., min_length=1),
+):
+    """Kiểm tra tương tác của một user; chỉ đọc dữ liệu."""
+
+    try:
+        db = get_db()
+        user_id = str(user_id)
+
+        raw_count = await db["user_interactions"].count_documents({
+            "user_id": user_id,
+        })
+
+        interactions = await load_interactions()
+        user_interactions = interactions[
+            interactions["user_id"] == user_id
+        ]
+
+        return {
+            "user_id": user_id,
+            "raw_interaction_count": raw_count,
+            "aggregated_user_post_pairs": len(user_interactions),
+            "total_weight": float(user_interactions["weight"].sum())
+            if not user_interactions.empty
+            else 0.0,
+            "unique_posts": int(user_interactions["post_id"].nunique())
+            if not user_interactions.empty
+            else 0,
+        }
+    except Exception:
+        logger.exception("Chẩn đoán tương tác người dùng thất bại.")
+        raise HTTPException(
+            status_code=500,
+            detail="Không thể chẩn đoán tương tác người dùng.",
+        )
