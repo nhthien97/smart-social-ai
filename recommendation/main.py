@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 
 from data_loader import close_db, get_db, load_interactions
 from models.schemas import (
@@ -67,6 +68,15 @@ app = FastAPI(
     description="Dịch vụ gợi ý bài viết cho Smart Social AI.",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://fluffy-goldfish-q7g4pwqqj5jwcxj9q-3000.app.github.dev",
+    ],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
