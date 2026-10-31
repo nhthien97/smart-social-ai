@@ -75,7 +75,7 @@ export default function AdminAccountsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="admin-accounts-page min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -85,7 +85,7 @@ export default function AdminAccountsPage() {
           </div>
           <button
             onClick={() => router.push('/admin/accounts/create')}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            className="accounts-primary-button px-6 py-2 font-medium"
           >
             + Add Admin
           </button>
@@ -96,13 +96,13 @@ export default function AdminAccountsPage() {
           <div className="flex gap-3">
             <button
               onClick={() => setShowPermissions(!showPermissions)}
-              className={`px-4 py-2 rounded-lg font-medium ${!showPermissions ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+              className={`accounts-tab px-4 py-2 font-medium ${!showPermissions ? 'is-active' : ''}`}
             >
               👥 Accounts
             </button>
             <button
               onClick={() => setShowPermissions(true)}
-              className={`px-4 py-2 rounded-lg font-medium ${showPermissions ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+              className={`accounts-tab px-4 py-2 font-medium ${showPermissions ? 'is-active' : ''}`}
             >
               🔐 Permissions
             </button>
@@ -111,7 +111,7 @@ export default function AdminAccountsPage() {
             <button
               onClick={() => handleRefresh()}
               disabled={isRefreshing}
-              className="px-3 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              className="accounts-toolbar-button px-3 py-2 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
             >
               <span className={isRefreshing ? 'inline-block animate-spin' : ''}>🔄</span>
               {isRefreshing ? 'Updating...' : 'Refresh'}
@@ -133,7 +133,7 @@ export default function AdminAccountsPage() {
         ) : showPermissions ? (
           <RolePermissions />
         ) : (
-          <div className="bg-white rounded-lg shadow">
+          <div className="accounts-table-card">
             <AdminAccountsTable accounts={accounts} onRefresh={handleRefresh} />
           </div>
         )}

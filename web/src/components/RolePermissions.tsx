@@ -1,12 +1,13 @@
+
 'use client'
 
-import { UserRoleAdmin } from '@/types'
-import { Shield } from 'lucide-react'
+import { Shield, Check } from 'lucide-react'
 
 const ROLE_PERMISSIONS = {
   ADMIN: {
     title: 'Super Admin',
-    color: 'text-purple-600',
+    color: 'admin',
+    description: 'Full access to platform administration',
     permissions: [
       'All Permissions',
       'User Management',
@@ -17,7 +18,8 @@ const ROLE_PERMISSIONS = {
   },
   MODERATOR: {
     title: 'Moderator',
-    color: 'text-blue-600',
+    color: 'moderator',
+    description: 'Manage users and moderate content',
     permissions: [
       'View Analytics',
       'Content Moderation',
@@ -26,43 +28,59 @@ const ROLE_PERMISSIONS = {
   },
   VIEWER: {
     title: 'Viewer',
-    color: 'text-gray-600',
+    color: 'viewer',
+    description: 'Read-only access to analytics and reports',
     permissions: ['View Analytics', 'View Reports'],
   },
 }
 
-export default function RolePermissions({ selectedRole }: { selectedRole?: string } = {}) {
+export default function RolePermissions({
+  selectedRole,
+}: { selectedRole?: string } = {}) {
   const entries = selectedRole
     ? Object.entries(ROLE_PERMISSIONS).filter(([role]) => role === selectedRole)
     : Object.entries(ROLE_PERMISSIONS)
 
   return (
-    <div className={`grid grid-cols-1 ${selectedRole ? '' : 'md:grid-cols-3'} gap-8 font-['Times_New_Roman'] text-gray-800`}>
+    <div
+      className={`accounts-permissions-grid ${
+        selectedRole ? 'is-single' : ''
+      }`}
+    >
       {entries.map(([role, data]) => (
-        <div
+        <section
           key={role}
-          className="bg-white rounded-xl shadow-sm border p-6"
+          className={`accounts-permission-card role-${data.color}`}
         >
-          {/* Header */}
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className={`w-5 h-5 ${data.color}`} />
-            <h3 className="text-lg font-medium">
-              {data.title}
-            </h3>
+          <div className="accounts-permission-header">
+            <div className="accounts-permission-icon">
+              <Shield size={22} strokeWidth={2} />
+            </div>
+
+            <div className="accounts-permission-heading">
+              <h3>{data.title}</h3>
+              <p>{data.description}</p>
+            </div>
           </div>
 
-          {/* Permissions */}
-          <ul className="space-y-3">
-            {data.permissions.map((perm, idx) => (
-              <li key={idx} className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span className="text-sm font-medium">
-                  {perm}
+          <div className="accounts-permission-divider" />
+
+          <p className="accounts-permission-label">PERMISSIONS</p>
+
+          <ul className="accounts-permission-list">
+            {data.permissions.map((permission) => (
+              <li
+                key={permission}
+                className="accounts-permission-item"
+              >
+                <span className="accounts-permission-check">
+                  <Check size={14} strokeWidth={2.5} />
                 </span>
+                <span>{permission}</span>
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       ))}
     </div>
   )

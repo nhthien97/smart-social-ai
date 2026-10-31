@@ -76,15 +76,15 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
   }
 
   return (
-    <div className="overflow-x-auto font-['Times_New_Roman'] text-gray-800">
+    <div className="admin-accounts-table-wrap overflow-x-auto text-gray-800">
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">
+        <div className="accounts-error mb-4 p-3">
           {error}
         </div>
       )}
 
-      <table className="w-full text-left text-sm">
-        <thead className="bg-gray-100 border-b">
+      <table className="accounts-table text-left text-sm">
+        <thead>
           <tr>
             <th className="px-6 py-3 font-medium">ADMIN</th>
             <th className="px-6 py-3 font-medium">EMAIL</th>
@@ -97,7 +97,7 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
 
         <tbody>
           {accounts.map((account) => (
-            <tr key={account._id} className="border-b hover:bg-gray-50">
+            <tr key={account._id}>
               <td className="px-6 py-4 font-medium">
                 {account.username}
               </td>
@@ -108,7 +108,7 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
 
               <td className="px-6 py-4">
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(
+                  className={`accounts-role-badge ${getRoleBadgeColor(
                     account.roles_admin[0]
                   )}`}
                 >
@@ -118,7 +118,7 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
 
               <td className="px-6 py-4">
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
+                  className={`accounts-status-badge ${getStatusBadgeColor(
                     account.status
                   )}`}
                 >
@@ -146,7 +146,7 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
                 <div className="flex gap-2">
                   <button
                     onClick={() => router.push(`/admin/accounts/${account._id}`)}
-                    className="text-blue-600 hover:text-blue-800 p-2"
+                    className="accounts-action-button text-blue-700"
                     title="Edit"
                     disabled={loading === account._id}
                   >
@@ -157,7 +157,7 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
                     onClick={() =>
                       handleStatusChange(account._id, account.status)
                     }
-                    className={`p-2 ${
+                    className={`accounts-action-button ${
                       account.status === 'ACTIVE'
                         ? 'text-yellow-600 hover:text-yellow-800'
                         : 'text-green-600 hover:text-green-800'
@@ -172,7 +172,7 @@ export default function AdminAccountsTable({ accounts, onRefresh }: AdminAccount
 
                   <button
                     onClick={() => handleDelete(account._id)}
-                    className="text-red-600 hover:text-red-800 p-2"
+                    className="accounts-action-button text-red-700"
                     title="Delete"
                     disabled={loading === account._id}
                   >
