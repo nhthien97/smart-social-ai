@@ -8,7 +8,7 @@ export default function SystemSettingsPage() {
   const [savedAt, setSavedAt] = useState<Date | null>(null)
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="system-settings-page min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">

@@ -148,9 +148,9 @@ export default function SystemSettingsForm({ onSaved }: Props) {
     <div className="space-y-6">
       {Object.entries(categorizedSettings).map(([category, categorySettings]) =>
         categorySettings.length > 0 && (
-          <div key={category} className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div key={category} className="settings-category-card">
             {/* Category Header */}
-            <div className="bg-gray-50 px-6 py-4 border-b flex items-center gap-2">
+            <div className="settings-category-header">
               <span className="text-xl">{categoryIcons[category]}</span>
               <h2 className="text-lg font-semibold text-gray-900">{category}</h2>
               <span className="text-sm text-gray-500 ml-auto">{categorySettings.length} settings</span>
@@ -162,9 +162,9 @@ export default function SystemSettingsForm({ onSaved }: Props) {
                 const isEditing = editingKey === s.setting_key
 
                 return (
-                  <div key={s.setting_key} className={`px-6 py-4 ${isEditing ? 'bg-blue-50/30' : 'hover:bg-gray-50'} transition-colors`}>
+                  <div key={s.setting_key} className={`settings-row ${isEditing ? 'is-editing' : ''}`}>
                     {isEditing ? (
-                      <div className="space-y-4">
+                      <div className="settings-edit-panel space-y-4">
                         <h3 className="text-sm font-semibold text-gray-900">
                           {s.description || s.setting_key}
                         </h3>
@@ -176,7 +176,7 @@ export default function SystemSettingsForm({ onSaved }: Props) {
                             <select
                               value={draft.setting_value as string}
                               onChange={(e) => setDraft({ ...draft, setting_value: e.target.value })}
-                              className="block w-full max-w-xs pl-3 pr-10 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
+                              className="settings-input block w-full max-w-xs pl-3 pr-10 py-2 text-sm"
                             >
                               <option value="true">Bật</option>
                               <option value="false">Tắt</option>
@@ -186,7 +186,7 @@ export default function SystemSettingsForm({ onSaved }: Props) {
                               type={s.data_type === 'number' ? 'number' : 'text'}
                               value={draft.setting_value as string}
                               onChange={(e) => setDraft({ ...draft, setting_value: e.target.value })}
-                              className="block w-full max-w-md px-3 py-2 text-sm border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
+                              className="settings-input block w-full max-w-md px-3 py-2 text-sm"
                             />
                           )}
                         </div>
@@ -207,13 +207,13 @@ export default function SystemSettingsForm({ onSaved }: Props) {
                         <div className="flex justify-end gap-2 pt-1">
                           <button
                             onClick={cancelEdit}
-                            className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg"
+                            className="settings-action-button settings-cancel-button px-4 py-2 text-sm font-medium"
                           >
                             Hủy
                           </button>
                           <button
                             onClick={saveEdit}
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                            className="settings-action-button settings-save-button px-4 py-2 text-sm font-medium"
                           >
                             Lưu
                           </button>
@@ -271,7 +271,7 @@ export default function SystemSettingsForm({ onSaved }: Props) {
       )}
 
       {settings.length === 0 && (
-        <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
+        <div className="settings-empty-state">
           <p className="text-gray-500">Chưa có cài đặt nào. Hãy chạy Seed Default Settings từ backend.</p>
         </div>
       )}
