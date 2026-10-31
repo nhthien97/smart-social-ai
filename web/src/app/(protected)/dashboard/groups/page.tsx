@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import {
     Search,
+    ChevronDown,
     Eye,
     ShieldOff,
     ShieldCheck,
@@ -31,6 +32,7 @@ type Group = {
 
 /* ===================== PAGE ===================== */
 export default function GroupManagementPage() {
+    const [openFilter, setOpenFilter] = useState<"privacy" | "status" | null>(null)
     const [groupsData, setGroupsData] = useState<Group[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -133,7 +135,7 @@ export default function GroupManagementPage() {
         )
 
     return (
-        <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+        <div className="groups-neu-page p-6 space-y-6 min-h-screen">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -150,7 +152,7 @@ export default function GroupManagementPage() {
             </div>
 
             {/* Search + Filter */}
-            <div className="flex flex-wrap gap-3 bg-white p-4 rounded-xl border shadow-sm">
+            <div className="groups-neu-toolbar flex flex-wrap gap-3 p-4 rounded-2xl">
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <input
@@ -164,31 +166,78 @@ export default function GroupManagementPage() {
                     />
                 </div>
 
-                <select
-                    className="px-3 py-2 rounded-lg border text-sm text-gray-900"
-                    value={privacy}
-                    onChange={(e) => {
-                        setPrivacy(e.target.value)
-                        setPage(1)
-                    }}
-                >
-                    <option value="all">All Privacy</option>
-                    <option value="public">Public</option>
-                    <option value="private">Private</option>
-                </select>
+                
+<div className="groups-neu-dropdown-wrap">
+    <button
+        type="button"
+        className="groups-neu-dropdown-trigger"
+        onClick={() => setOpenFilter(openFilter === "privacy" ? null : "privacy")}
+        aria-expanded={openFilter === "privacy"}
+    >
+        {privacy === "all" ? "All Privacy" : privacy === "public" ? "Public" : "Private"}
+        <ChevronDown size={16} />
+    </button>
 
-                <select
-                    className="px-3 py-2 rounded-lg border text-sm text-gray-900"
-                    value={status}
-                    onChange={(e) => {
-                        setStatus(e.target.value)
+    {openFilter === "privacy" && (
+        <div className="groups-neu-dropdown-menu">
+            {[
+                { value: "all", label: "All Privacy" },
+                { value: "public", label: "Public" },
+                { value: "private", label: "Private" },
+            ].map((option) => (
+                <button
+                    type="button"
+                    key={option.value}
+                    className={`groups-neu-dropdown-option ${privacy === option.value ? "is-selected" : ""}`}
+                    onClick={() => {
+                        setPrivacy(option.value)
                         setPage(1)
+                        setOpenFilter(null)
                     }}
                 >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="blocked">Disabled</option>
-                </select>
+                    {option.label}
+                </button>
+            ))}
+        </div>
+    )}
+</div>
+
+<div className="groups-neu-dropdown-wrap">
+    <button
+        type="button"
+        className="groups-neu-dropdown-trigger"
+        onClick={() => setOpenFilter(openFilter === "status" ? null : "status")}
+        aria-expanded={openFilter === "status"}
+    >
+        {status === "all" ? "All Status" : status === "active" ? "Active" : "Disabled"}
+        <ChevronDown size={16} />
+    </button>
+
+    {openFilter === "status" && (
+        <div className="groups-neu-dropdown-menu">
+            {[
+                { value: "all", label: "All Status" },
+                { value: "active", label: "Active" },
+                { value: "blocked", label: "Disabled" },
+            ].map((option) => (
+                <button
+                    type="button"
+                    key={option.value}
+                    className={`groups-neu-dropdown-option ${status === option.value ? "is-selected" : ""}`}
+                    onClick={() => {
+                        setStatus(option.value)
+                        setPage(1)
+                        setOpenFilter(null)
+                    }}
+                >
+                    {option.label}
+                </button>
+            ))}
+        </div>
+    )}
+</div>
+
+            
             </div>
 
             {/* Grid */}
@@ -197,27 +246,31 @@ export default function GroupManagementPage() {
                     Loading...
                 </div>
             ) : (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {groups.map((g) => (
                         <div
                             key={g.id}
-                            className="rounded-2xl border bg-white shadow-sm hover:shadow-md overflow-hidden"
+                            className="groups-neu-card rounded-2xl overflow-hidden flex flex-col"
                         >
-                            <div className="h-24 bg-gradient-to-r from-blue-500 to-purple-500" />
+                            <div className="groups-neu-card-banner h-24" />
 
-                            <div className="p-4 space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-lg font-semibold text-gray-900 truncate">
-                                        {g.name}
-                                    </h3>
-                                    <StatusBadge s={g.status} />
-                                </div>
+                            <div className="groups-neu-card-body p-4 flex flex-col flex-1">
+                                
+<div className="flex justify-between items-center gap-3">
+    <h3 className="text-lg font-semibold text-gray-900 truncate min-w-0 flex-1">
+        {g.name}
+    </h3>
+    <div className="shrink-0">
+        <StatusBadge s={g.status} />
+    </div>
+</div>
+
 
                                 <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
                                     {g.description}
                                 </p>
 
-                                <div className="text-sm text-gray-700 space-y-1">
+                                <div className="text-sm text-gray-700 space-y-1 flex-1">
                                     <div className="flex items-center gap-2">
                                         <Crown className="w-4 h-4 text-orange-500" />
                                         <span className="font-medium">
@@ -242,7 +295,7 @@ export default function GroupManagementPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2 pt-2">
+                                <div className="flex gap-2 pt-2 mt-auto">
                                     <button
                                         onClick={() => fetchGroupDetails(g)}
                                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
@@ -275,10 +328,39 @@ export default function GroupManagementPage() {
                         </div>
                     ))}
                 </div>
+            
+            )}
+
+            {/* Pagination */}
+            {!loading && totalPages > 1 && (
+                <div className="groups-neu-pagination">
+                    <button
+                        type="button"
+                        className="groups-neu-page-btn"
+                        disabled={page === 1}
+                        onClick={() => setPage((current) => current - 1)}
+                    >
+                        Previous
+                    </button>
+
+                    <span className="groups-neu-page-info">
+                        Page {page} of {totalPages}
+                    </span>
+
+                    <button
+                        type="button"
+                        className="groups-neu-page-btn"
+                        disabled={page === totalPages}
+                        onClick={() => setPage((current) => current + 1)}
+                    >
+                        Next
+                    </button>
+                </div>
             )}
 
             {/* Summary */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6">
+
 
             {/* Group Detail Modal */}
             {(selectedGroup || detailLoading) && (
@@ -316,22 +398,24 @@ export default function GroupManagementPage() {
     )
 }
 
+
 /* ===== SUMMARY CARD ===== */
 function SummaryCard({ title, value }: { title: string; value: number }) {
     return (
-        <div className="rounded-xl border bg-white p-4 shadow-sm">
+        <div className="groups-neu-summary rounded-2xl p-4">
             <p className="text-sm text-gray-500">{title}</p>
             <p className="text-2xl font-semibold text-gray-900">{value}</p>
         </div>
     )
 }
 
+
 /* ===== GROUP DETAIL MODAL ===== */
 function GroupDetailModal({ group, loading, onClose }: { group: any; loading: boolean; onClose: () => void }) {
     if (loading) {
         return (
-            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl p-8">
+            <div className="groups-neu-modal-overlay">
+    <div className="groups-neu-modal">
                     <Loader2 className="animate-spin text-gray-400" size={32} />
                 </div>
             </div>
@@ -344,27 +428,33 @@ function GroupDetailModal({ group, loading, onClose }: { group: any; loading: bo
     const groupInfo = group.group || group
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl w-full max-w-3xl p-6 relative max-h-[90vh] overflow-y-auto">
-                <button
-                    onClick={onClose}
-                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
-                >
-                    <X size={18} />
-                </button>
+    <div className="groups-neu-modal-overlay">
+        <div className="groups-neu-modal">
+            <button
+                onClick={onClose}
+                className="groups-neu-modal-close"
+                type="button"
+                aria-label="Close modal"
+            >
+                <X size={18} />
+            </button>
 
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    {groupInfo.name || group.name}
-                </h2>
+            <h2 className="groups-neu-modal-title">
+                {groupInfo.name || group.name}
+            </h2>
 
-                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                    <div>
-                        <p className="text-gray-500 mb-1">Privacy</p>
-                        <div className="flex items-center gap-1 text-gray-700">
-                            {(groupInfo.privacy || group.privacy) === "public" ? <Globe className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-                            <span className="capitalize">{groupInfo.privacy || group.privacy}</span>
-                        </div>
+            <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div>
+                    <p className="text-gray-500 mb-1">Privacy</p>
+                    <div className="flex items-center gap-1 text-gray-700">
+                        {(groupInfo.privacy || group.privacy) === "public"
+                            ? <Globe className="w-4 h-4" />
+                            : <Lock className="w-4 h-4" />}
+                        <span className="capitalize">
+                            {groupInfo.privacy || group.privacy}
+                        </span>
                     </div>
+                </div>
                     <div>
                         <p className="text-gray-500 mb-1">Status</p>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
