@@ -157,7 +157,7 @@ export default function AdminLogsPage() {
     }, {})
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="admin-logs-page p-6 space-y-6">
 
             {/* HEADER */}
             <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function AdminLogsPage() {
 
                 <button
                     onClick={handleExport}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+                    className="admin-logs-export flex items-center gap-2 px-5 py-2.5 font-medium"
                 >
                     <Download size={18} />
                     Export
@@ -189,7 +189,7 @@ export default function AdminLogsPage() {
             </div>
 
             {/* SEARCH + FILTER */}
-            <div className="bg-white border rounded-xl p-4 space-y-4">
+            <div className="admin-logs-search-panel p-4 space-y-4">
                 <div className="flex gap-4">
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -197,7 +197,7 @@ export default function AdminLogsPage() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Tìm theo action, entity type, entity id..."
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
+                            className="admin-logs-input w-full pl-10 pr-4 py-2.5 outline-none text-gray-700"
                         />
                     </div>
                     <button
@@ -264,14 +264,14 @@ export default function AdminLogsPage() {
             </div>
 
             {/* LOG LIST */}
-            <div className="bg-white rounded-xl border divide-y">
+            <div className="admin-logs-list divide-y">
                 {loading && logs.length === 0 ? (
                     <div className="p-12 text-center text-gray-400">Đang tải...</div>
                 ) : logs.length === 0 ? (
                     <div className="p-12 text-center text-gray-400">Không có log nào</div>
                 ) : (
                     logs.map((log) => (
-                        <div key={log._id} className="flex justify-between p-5 hover:bg-gray-50 transition">
+                        <div key={log._id} className="admin-logs-item flex justify-between p-5 transition">
                             <div className="flex gap-4">
                                 <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                                     {getActionIcon(log.action)}
@@ -356,8 +356,8 @@ export default function AdminLogsPage() {
 
 function SummaryCard({ title, count, icon }: { title: string; count: number; icon: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-xl border p-4 flex items-center gap-3 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+        <div className="admin-logs-summary-card flex items-center gap-3 p-4">
+            <div className="admin-logs-summary-icon w-10 h-10 rounded-lg flex items-center justify-center">
                 {icon}
             </div>
             <div>
