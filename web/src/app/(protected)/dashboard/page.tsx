@@ -78,6 +78,7 @@ export default function DashboardPage() {
 
             setOverview(ovRes.data)
             setGrowthData(grRes.data)
+            console.log("Growth API data:", JSON.stringify(grRes.data, null, 2))
             setEngagement(engRes.data)
 
             // Aggregate report reasons for pie chart
@@ -124,10 +125,10 @@ export default function DashboardPage() {
     const dailyChart = buildDailyChart(engagement)
 
     return (
-        <div className="space-y-6">
+        <div className="admin-dashboard-page space-y-6">
             {/* TITLE */}
             <div>
-                <h1 className="text-3xl font-semibold text-gray-900">Dashboard</h1>
+                <h1 className="admin-page-title text-3xl font-semibold">Dashboard</h1>
             </div>
 
             {/* STATS */}
@@ -179,7 +180,7 @@ export default function DashboardPage() {
             {/* CHARTS ROW 1 */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* USER GROWTH */}
-                <div className="bg-white p-6 rounded-xl border">
+                <div className="dashboard-neumorphic-card p-6 rounded-xl border">
                     <h3 className="font-semibold text-gray-900 mb-4">User Growth (Monthly)</h3>
                     <div className="h-72">
                         {userGrowthChart.length > 0 ? (
@@ -199,7 +200,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* ENGAGEMENT DAILY */}
-                <div className="bg-white p-6 rounded-xl border">
+                <div className="dashboard-neumorphic-card p-6 rounded-xl border">
                     <h3 className="font-semibold text-gray-900 mb-4">Likes & Comments (Last 7 days)</h3>
                     <div className="h-72">
                         {dailyChart.length > 0 ? (
@@ -224,7 +225,7 @@ export default function DashboardPage() {
             {/* CHARTS ROW 2 */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* REPORT REASONS PIE */}
-                <div className="bg-white p-6 rounded-xl border">
+                <div className="dashboard-neumorphic-card p-6 rounded-xl border">
                     <h3 className="font-semibold text-gray-900 mb-4">Report Reasons</h3>
                     <div className="h-72 flex justify-center">
                         {violationData.length > 0 ? (
@@ -246,7 +247,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* RECENT ADMIN ACTIVITY */}
-                <div className="bg-white p-6 rounded-xl border">
+                <div className="dashboard-neumorphic-card p-6 rounded-xl border">
                     <h3 className="font-semibold text-gray-900 mb-4">Recent Admin Activity</h3>
                     {recentLogs.length > 0 ? (
                         <ul className="space-y-4 text-sm">
@@ -286,7 +287,7 @@ function Stat({ title, value, percent, danger, icon }: { title: string; value: s
     }
 
     return (
-        <div className="bg-white p-6 rounded-xl border flex justify-between items-start">
+        <div className="dashboard-neumorphic-card p-6 rounded-xl border flex justify-between items-start">
             <div>
                 <p className="text-sm text-gray-600">{title}</p>
                 <h3 className="text-3xl font-bold text-gray-900 mt-2">{value}</h3>
