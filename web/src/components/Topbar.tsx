@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
@@ -14,13 +15,19 @@ export default function Topbar() {
     // Đóng dropdown khi click ra ngoài
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
                 setIsDropdownOpen(false)
             }
         }
 
         document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
     }, [])
 
     const handleLogout = () => {
@@ -29,82 +36,102 @@ export default function Topbar() {
     }
 
     return (
-        <header className="h-16 bg-white border-b flex items-center justify-between px-6">
-
+        <header className="admin-topbar flex h-16 shrink-0 items-center justify-between px-6">
             {/* Title */}
             <div />
 
             {/* Right actions */}
             <div className="flex items-center gap-6">
-
                 {/* Notification */}
-                <div className="relative cursor-pointer">
-                    <Bell size={20} className="text-gray-700" />
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </div>
+                <button
+                    type="button"
+                    aria-label="Notifications"
+                    className="admin-topbar-notification relative flex h-10 w-10 items-center justify-center rounded-xl"
+                >
+                    <Bell size={20} className="admin-topbar-icon" />
+                    <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
+                </button>
 
                 {/* User Dropdown */}
                 <div className="relative" ref={dropdownRef}>
-                    <div
-                        className="flex items-center gap-3 cursor-pointer"
+                    <button
+                        type="button"
+                        aria-expanded={isDropdownOpen}
+                        aria-haspopup="true"
+                        className="admin-topbar-profile flex items-center gap-3 rounded-xl"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
+                        <span className="admin-topbar-avatar flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl">
                             {user?.avatar ? (
-                                <img src={user.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+                                <img
+                                    src={user.avatar}
+                                    alt="Avatar"
+                                    className="h-full w-full rounded-xl object-cover"
+                                />
                             ) : (
                                 <User size={18} className="text-white" />
                             )}
-                        </div>
-                        <div className="leading-tight">
-                            <div className="text-sm font-semibold text-gray-800">
+                        </span>
+
+                        <span className="text-left leading-tight">
+                            <span className="block text-sm font-bold text-[#303846]">
                                 {user?.fullName || user?.full_name || 'Admin User'}
-                            </div>
-                            <div className="text-xs text-gray-600">
+                            </span>
+                            <span className="mt-1 block text-xs text-[#858d99]">
                                 {user?.roles_admin || 'Admin'}
-                            </div>
-                        </div>
+                            </span>
+                        </span>
+
                         <ChevronDown
                             size={16}
-                            className={`text-gray-600 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                            className={`text-[#626b79] transition-transform ${
+                                isDropdownOpen ? 'rotate-180' : ''
+                            }`}
                         />
-                    </div>
+                    </button>
 
                     {/* Dropdown Menu */}
                     {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border py-1 z-50">
-                            <div className="px-4 py-3 border-b">
-                                <p className="text-sm font-semibold text-gray-900 truncate">
+                        <div className="admin-topbar-dropdown absolute right-0 z-50 mt-3 w-56 rounded-xl py-1">
+                            <div className="admin-dropdown-heading border-b px-4 py-3">
+                                <p className="truncate text-sm font-semibold text-[#303846]">
                                     {user?.fullName || user?.full_name || 'Admin User'}
                                 </p>
-                                <p className="text-xs text-gray-500 truncate">
+                                <p className="truncate text-xs text-[#858d99]">
                                     {user?.email}
                                 </p>
                             </div>
+
                             <button
+                                type="button"
                                 onClick={() => {
                                     setIsDropdownOpen(false)
                                     router.push('/profile')
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                                className="admin-dropdown-item flex w-full items-center gap-3 px-4 py-3 text-sm"
                             >
                                 <User size={16} />
                                 Hồ sơ cá nhân
                             </button>
+
                             <button
+                                type="button"
                                 onClick={() => {
                                     setIsDropdownOpen(false)
                                     router.push('/change-password')
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                                className="admin-dropdown-item flex w-full items-center gap-3 px-4 py-3 text-sm"
                             >
                                 <Settings size={16} />
                                 Đổi mật khẩu
                             </button>
-                            <div className="border-t my-1"></div>
+
+                            <div className="admin-dropdown-divider my-1 border-t" />
+
                             <button
+                                type="button"
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                                className="admin-dropdown-item admin-dropdown-logout flex w-full items-center gap-3 px-4 py-3 text-sm"
                             >
                                 <LogOut size={16} />
                                 Đăng xuất

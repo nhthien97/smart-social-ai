@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -36,25 +37,25 @@ export default function Sidebar() {
     const pathname = usePathname()
     const router = useRouter()
     const { logout, user } = useAuthStore()
-    const isAdmin = user?.roles_admin?.includes('ADMIN') ?? false
+    const isAdmin = user?.roles_admin?.includes("ADMIN") ?? false
 
     const handleLogout = () => {
         logout()
-        router.push('/login')
+        router.push("/login")
     }
 
     return (
-        <aside className="w-64 bg-slate-900 text-white flex flex-col">
-            {/* Logo */}
-            <div className="h-16 flex items-center gap-3 px-6 border-b border-slate-800">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center font-bold">
-                    M
+        <aside className="admin-sidebar flex h-full w-64 shrink-0 flex-col">
+            <div className="admin-sidebar-brand flex h-16 shrink-0 items-center gap-3 px-6">
+                <div className="admin-gradient-logo flex h-10 w-10 items-center justify-center rounded-xl font-extrabold text-white">
+                    S
                 </div>
-                <span className="text-lg font-semibold">MiniSocial</span>
+                <span className="text-base font-extrabold tracking-tight">
+                    Smart Social AI
+                </span>
             </div>
 
-            {/* Menu */}
-            <nav className="flex-1 px-3 py-4 space-y-1">
+            <nav className="admin-sidebar-nav flex-1 space-y-2 overflow-y-auto px-3 py-4">
                 {menu.filter((item) => !item.adminOnly || isAdmin).map((item) => {
                     const active = pathname === item.href
                     const Icon = item.icon
@@ -63,17 +64,14 @@ export default function Sidebar() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition
-                                ${active
-                                    ? "bg-blue-600 text-white"
-                                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                                }
-                            `}
+                            className={`admin-nav-item flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                                active ? "active" : ""
+                            }`}
                         >
-                            <Icon size={20} />
-                            <span className="text-sm font-medium">{item.label}</span>
+                            <Icon size={19} className="shrink-0" />
+                            <span className="text-xs font-semibold">{item.label}</span>
                             {item.adminOnly && (
-                                <span className="ml-auto text-[10px] bg-indigo-700 text-indigo-200 px-1.5 py-0.5 rounded">
+                                <span className="admin-role-badge ml-auto rounded-md px-1.5 py-1 text-[9px] font-bold">
                                     Admin
                                 </span>
                             )}
@@ -82,14 +80,13 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            {/* Logout */}
-            <div className="px-3 py-4 border-t border-slate-800">
+            <div className="admin-sidebar-footer shrink-0 px-3 py-4">
                 <button
                     onClick={handleLogout}
-                    className="flex w-full items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-red-600 hover:text-white transition"
+                    className="admin-nav-item admin-logout flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200"
                 >
-                    <LogOut size={20} />
-                    <span className="text-sm font-medium">Logout</span>
+                    <LogOut size={19} />
+                    <span className="text-xs font-semibold">Logout</span>
                 </button>
             </div>
         </aside>
