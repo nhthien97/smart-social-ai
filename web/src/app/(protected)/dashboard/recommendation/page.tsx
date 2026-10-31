@@ -80,7 +80,7 @@ function MetricCard({
     color: string
 }) {
     return (
-        <div className="bg-white rounded-xl border p-5 flex items-start gap-4">
+        <div className="recommendation-metric p-5 flex items-start gap-4">
             <div className={`p-3 rounded-lg ${color}`}>
                 <Icon size={20} className="text-white" />
             </div>
@@ -334,7 +334,7 @@ export default function RecommendationPage() {
     const serverUp = health?.status === "ok"
 
     return (
-        <div className="p-6 space-y-8 max-w-5xl mx-auto">
+        <div className="recommendation-page p-6 space-y-8 max-w-6xl mx-auto">
 
             {/* ── Header ── */}
             <div className="flex items-center justify-between">
@@ -361,7 +361,7 @@ export default function RecommendationPage() {
                     <button
                         onClick={fetchAll}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 text-sm bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                        className="recommendation-button flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50"
                     >
                         <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
                         Refresh
@@ -405,7 +405,7 @@ export default function RecommendationPage() {
             </section>
 
             {/* ── Call all endpoints ── */}
-            <section className="bg-white border rounded-xl p-5 space-y-4">
+            <section className="recommendation-card space-y-4">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div>
                         <h2 className="font-semibold text-gray-900">Tab ML: Gọi tất cả endpoint</h2>
@@ -416,7 +416,7 @@ export default function RecommendationPage() {
                     <button
                         onClick={callAllEndpoints}
                         disabled={allLoading || !serverUp}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-black disabled:opacity-50 transition"
+                        className="recommendation-button flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50 transition"
                     >
                         <RefreshCw size={14} className={allLoading ? "animate-spin" : ""} />
                         {allLoading ? "Đang gọi..." : "Gọi tất cả endpoint"}
@@ -476,7 +476,7 @@ export default function RecommendationPage() {
             </section>
 
             {/* ── Train ── */}
-            <section className="bg-white border rounded-xl p-5">
+            <section className="recommendation-card">
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h2 className="font-semibold text-gray-900">Train model ngay</h2>
@@ -487,7 +487,7 @@ export default function RecommendationPage() {
                     <button
                         onClick={runTrain}
                         disabled={trainLoading || !serverUp}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
+                        className="recommendation-button flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50 transition"
                     >
                         <PlayCircle size={16} className={trainLoading ? "animate-spin" : ""} />
                         {trainLoading ? "Đang train..." : "Train ngay"}
@@ -514,7 +514,7 @@ export default function RecommendationPage() {
             </section>
 
             {/* ── Evaluation ── */}
-            <section className="bg-white border rounded-xl p-5 space-y-5">
+            <section className="recommendation-card space-y-5">
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -532,7 +532,7 @@ export default function RecommendationPage() {
                             <select
                                 value={k}
                                 onChange={(e) => setK(Number(e.target.value))}
-                                className="border rounded-lg px-2 py-1 text-sm"
+                                className="recommendation-select text-sm"
                             >
                                 {[5, 10, 15, 20].map((v) => (
                                     <option key={v} value={v}>{v}</option>
@@ -542,7 +542,7 @@ export default function RecommendationPage() {
                         <button
                             onClick={runEval}
                             disabled={evalLoading || !serverUp}
-                            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
+                            className="recommendation-button flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50 transition"
                         >
                             <BarChart2 size={15} className={evalLoading ? "animate-spin" : ""} />
                             {evalLoading ? "Đang đánh giá..." : "Chạy đánh giá"}
@@ -672,7 +672,7 @@ export default function RecommendationPage() {
             </section>
 
             {/* ── Lookup: recommend for user ── */}
-            <section className="bg-white border rounded-xl p-5 space-y-4">
+            <section className="recommendation-card space-y-4">
                 <div>
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2">
                         <Search size={17} className="text-indigo-500" />
@@ -690,12 +690,12 @@ export default function RecommendationPage() {
                         onChange={(e) => setUserIdQuery(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && lookupRecommend()}
                         placeholder="Nhập user_id..."
-                        className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        className="recommendation-input flex-1 text-sm"
                     />
                     <button
                         onClick={lookupRecommend}
                         disabled={recLoading || !userIdQuery.trim() || !serverUp}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
+                        className="recommendation-button flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50 transition"
                     >
                         <Search size={14} className={recLoading ? "animate-spin" : ""} />
                         {recLoading ? "Đang tìm..." : "Tra cứu"}
@@ -742,7 +742,7 @@ export default function RecommendationPage() {
                     <div className="space-y-3">
                         <div className="flex items-center gap-3 flex-wrap">
                             <span className="text-xs text-gray-500">
-                                User: <code className="font-mono bg-gray-100 px-1 rounded">{recResult.user_id}</code>
+                                User: <code className="recommendation-code font-mono">{recResult.user_id}</code>
                             </span>
                             <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
                                 recResult.source === "hybrid"
@@ -761,8 +761,8 @@ export default function RecommendationPage() {
                                 Không có gợi ý nào
                             </p>
                         ) : (
-                            <div className="rounded-xl border overflow-hidden">
-                                <table className="w-full text-sm">
+                            <div className="recommendation-table-wrap">
+                                <table className="recommendation-table">
                                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
                                         <tr>
                                             <th className="px-4 py-2.5 text-left w-8">#</th>
@@ -783,7 +783,7 @@ export default function RecommendationPage() {
                                                     <td className="px-4 py-2.5 text-gray-400 font-mono text-xs">{rec.rank}</td>
                                                     <td className="px-4 py-2.5">
                                                         <div>
-                                                            <code className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded break-all">
+                                                            <code className="recommendation-code font-mono text-xs break-all">
                                                                 {rec.post_id}
                                                             </code>
                                                             {postInfo?.content && (
@@ -835,7 +835,7 @@ export default function RecommendationPage() {
             </section>
 
             {/* ── Lookup: similar posts ── */}
-            <section className="bg-white border rounded-xl p-5 space-y-4">
+            <section className="recommendation-card space-y-4">
                 <div>
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2">
                         <Layers size={17} className="text-violet-500" />
@@ -853,12 +853,12 @@ export default function RecommendationPage() {
                         onChange={(e) => setPostIdQuery(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && lookupSimilar()}
                         placeholder="Nhập post_id..."
-                        className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+                        className="recommendation-input flex-1 text-sm"
                     />
                     <button
                         onClick={lookupSimilar}
                         disabled={simLoading || !postIdQuery.trim() || !serverUp}
-                        className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition"
+                        className="recommendation-button flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50 transition"
                     >
                         <Layers size={14} className={simLoading ? "animate-spin" : ""} />
                         {simLoading ? "Đang tìm..." : "Tra cứu"}
@@ -908,7 +908,7 @@ export default function RecommendationPage() {
                     <div className="space-y-3">
                         <div className="flex items-center gap-3 flex-wrap">
                             <span className="text-xs text-gray-500">
-                                Post: <code className="font-mono bg-gray-100 px-1 rounded">{simResult.post_id.slice(0, 20)}…</code>
+                                Post: <code className="recommendation-code font-mono">{simResult.post_id.slice(0, 20)}…</code>
                             </span>
                             <span className="text-xs text-gray-400">
                                 {simResult.similar_posts.length} bài tương tự tìm thấy
@@ -920,8 +920,8 @@ export default function RecommendationPage() {
                                 Không có bài tương tự — model chưa được train hoặc bài viết này chưa có interactions
                             </p>
                         ) : (
-                            <div className="rounded-xl border overflow-hidden">
-                                <table className="w-full text-sm">
+                            <div className="recommendation-table-wrap">
+                                <table className="recommendation-table">
                                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
                                         <tr>
                                             <th className="px-4 py-2.5 text-left w-8">#</th>
@@ -944,7 +944,7 @@ export default function RecommendationPage() {
                                                     <td className="px-4 py-2.5 text-gray-400 font-mono text-xs">{idx + 1}</td>
                                                     <td className="px-4 py-2.5">
                                                         <div>
-                                                            <code className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">
+                                                            <code className="recommendation-code font-mono text-xs">
                                                                 {item.post_id_b.slice(0, 16)}…
                                                             </code>
                                                             {postInfo?.content && (
