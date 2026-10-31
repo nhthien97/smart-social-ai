@@ -118,7 +118,7 @@ export default function ReportsPage() {
                 </div>
 
                 {/* SEARCH */}
-                <div className="bg-white border rounded-xl p-4 flex gap-4">
+                <div className="reports-neu-panel flex gap-4 rounded-2xl p-5">
                     <div className="relative flex-1">
                         <Search
                             size={18}
@@ -128,7 +128,7 @@ export default function ReportsPage() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search by reporter, content, or reason..."
-                            className="w-full border rounded-lg pl-10 pr-4 py-2 text-sm text-gray-700"
+                            className="reports-neu-input w-full rounded-xl py-3 pl-10 pr-4 text-base text-[#303846] outline-none"
                         />
                     </div>
 
@@ -138,7 +138,7 @@ export default function ReportsPage() {
                             setStatus(e.target.value)
                             setPage(1)
                         }}
-                        className="border rounded-lg px-3 py-2 text-sm text-gray-700"
+                        className="reports-neu-input rounded-xl px-4 py-3 text-base text-[#303846] outline-none"
                     >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -148,14 +148,14 @@ export default function ReportsPage() {
                 </div>
 
                 {/* TABLE */}
-                <div className="bg-white border rounded-xl overflow-hidden">
+                <div className="reports-neu-panel overflow-hidden rounded-2xl">
                     {loading ? (
                         <div className="flex items-center justify-center py-12">
                             <Loader2 className="animate-spin text-gray-400" size={32} />
                         </div>
                     ) : (
-                        <table className="w-full text-sm">
-                            <thead className="bg-gray-50 text-gray-600 font-medium">
+                        <table className="reports-neu-table w-full text-base">
+                            <thead className="reports-neu-table-head font-semibold text-[#303846]">
                                 <tr>
                                     <th className="p-4 text-left">Reporter</th>
                                     <th className="text-left">Post / Target</th>
@@ -166,7 +166,7 @@ export default function ReportsPage() {
                                 </tr>
                             </thead>
 
-                            <tbody className="text-gray-700">
+                            <tbody className="text-base text-gray-700">
                                 {filteredReports.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="p-8 text-center text-gray-400">
@@ -175,16 +175,16 @@ export default function ReportsPage() {
                                     </tr>
                                 ) : (
                                     filteredReports.map((r: any) => (
-                                        <tr key={r._id} className="border-t hover:bg-gray-50">
+                                        <tr key={r._id} className="reports-neu-table-row">
                                             <td className="p-4">
                                                 <p className="font-medium">{r.reporter_info?.full_name || r.reporter_info?.username || 'Unknown'}</p>
-                                                <p className="text-xs text-gray-400">@{r.reporter_info?.username}</p>
+                                                <p className="text-sm text-gray-400">@{r.reporter_info?.username}</p>
                                             </td>
 
                                             <td>
                                                 {r.post_info ? (
                                                     <>
-                                                        <p className="text-gray-700 truncate max-w-xs">
+                                                        <p className="text-[17px] leading-[1.85] text-gray-700 truncate max-w-xs">
                                                             {r.post_info.content?.substring(0, 60)}
                                                             {r.post_info.content?.length > 60 ? '...' : ''}
                                                         </p>
@@ -219,7 +219,7 @@ export default function ReportsPage() {
                                             <td className="text-right pr-4">
                                                 <button
                                                     onClick={() => setSelectedReport(r)}
-                                                    className="px-3 py-1 rounded-md text-xs font-medium border border-blue-500 text-blue-600 hover:bg-blue-50"
+                                                    className="reports-review-button"
                                                 >
                                                     {r.status === 'pending' ? 'Review' : 'View'}
                                                 </button>
@@ -304,22 +304,22 @@ function ReviewModal({ report, onClose, onDone }: { report: any; onClose: () => 
     const isPending = report.status === 'pending'
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+        <div className="report-modal-overlay fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div className="report-modal relative w-full max-w-3xl rounded-[22px] p-6 md:p-8 max-h-[90vh] overflow-y-auto">
                 <button
                     onClick={onClose}
-                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                    className="report-modal-close absolute right-4 top-4"
                 >
                     <X size={18} />
                 </button>
 
-                <h2 className="text-xl font-medium mb-4 text-gray-800">
+                <h2 className="text-2xl font-bold mb-6 text-[#303846] tracking-tight">
                     {isPending ? 'Review Report' : 'Report Details'}
                 </h2>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="report-modal-panel grid grid-cols-2 gap-x-6 gap-y-5 text-base">
                     <div>
-                        <p className="text-gray-500 mb-1">Reporter</p>
+                        <p className="report-modal-label">Reporter</p>
                         <p className="text-gray-700 font-medium">
                             {report.reporter_info?.full_name || report.reporter_info?.username || 'Unknown'}
                         </p>
@@ -343,7 +343,7 @@ function ReviewModal({ report, onClose, onDone }: { report: any; onClose: () => 
                 {report.post_info && (
                     <div className="mt-4">
                         <p className="text-gray-500 text-sm mb-1">Reported Post</p>
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-gray-700">
+                        <div className="report-modal-panel report-modal-post p-4 text-sm text-[#303846]">
                             <p className="font-medium text-xs text-gray-500 mb-1">
                                 By {report.post_info.author_name || report.post_info.author_username} • Status: {report.post_info.status}
                             </p>
@@ -370,7 +370,7 @@ function ReviewModal({ report, onClose, onDone }: { report: any; onClose: () => 
                 {report.description && (
                     <div className="mt-4">
                         <p className="text-gray-500 text-sm mb-1">Description</p>
-                        <div className="bg-gray-50 border rounded-lg p-3 text-sm text-gray-600">
+                        <div className="report-modal-panel text-sm text-[#303846]">
                             {report.description}
                         </div>
                     </div>
@@ -399,41 +399,43 @@ function ReviewModal({ report, onClose, onDone }: { report: any; onClose: () => 
                     <>
                         <div className="mt-4">
                             <p className="text-gray-500 text-sm mb-1">Resolution Note *</p>
-                            <textarea
-                                value={note}
-                                onChange={(e) => setNote(e.target.value)}
-                                placeholder="Enter reason for your decision..."
-                                className="w-full border rounded-lg p-3 text-sm text-gray-700 resize-none"
-                                rows={3}
-                            />
+                            
+<textarea
+    value={note}
+    onChange={(e) => setNote(e.target.value)}
+    placeholder="Enter reason for your decision..."
+    className="report-modal-textarea text-base"
+    rows={3}
+/>
+
                         </div>
 
                         <div className="mt-4 flex gap-3 flex-wrap">
                             <button
                                 disabled={!!actionLoading}
                                 onClick={() => handleAction('remove_post')}
-                                className="px-4 py-2 rounded-md bg-green-600 text-white font-medium hover:bg-green-700 active:scale-95 transition-all duration-200 disabled:opacity-50"
+                                className="report-modal-action report-modal-button-green"
                             >
                                 {actionLoading === 'remove_post' ? 'Processing...' : 'Accept & Remove Post'}
                             </button>
                             <button
                                 disabled={!!actionLoading}
                                 onClick={() => handleAction('hide_post')}
-                                className="px-4 py-2 rounded-md bg-orange-600 text-white font-medium hover:bg-orange-700 active:scale-95 transition-all duration-200 disabled:opacity-50"
+                                className="report-modal-action report-modal-button-orange"
                             >
                                 {actionLoading === 'hide_post' ? 'Processing...' : 'Hide Post'}
                             </button>
                             <button
                                 disabled={!!actionLoading}
                                 onClick={() => handleAction('ban_user')}
-                                className="px-4 py-2 rounded-md bg-red-600 text-white font-medium hover:bg-red-700 active:scale-95 transition-all duration-200 disabled:opacity-50"
+                                className="report-modal-action report-modal-button-red"
                             >
                                 {actionLoading === 'ban_user' ? 'Processing...' : 'Ban User'}
                             </button>
                             <button
                                 disabled={!!actionLoading}
                                 onClick={() => handleAction('reject')}
-                                className="px-4 py-2 rounded-md bg-gray-700 text-white font-medium hover:bg-gray-800 active:scale-95 transition-all duration-200 disabled:opacity-50"
+                                className="report-modal-action report-modal-button-dark"
                             >
                                 {actionLoading === 'reject' ? 'Processing...' : 'Reject Report'}
                             </button>
@@ -444,7 +446,7 @@ function ReviewModal({ report, onClose, onDone }: { report: any; onClose: () => 
                 <div className="mt-6 text-right">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 rounded-md border border-gray-400 text-gray-700 font-medium hover:bg-gray-100 active:scale-95 transition-all duration-200"
+                        className="report-modal-action report-modal-button-neutral"
                     >
                         Close
                     </button>
@@ -464,7 +466,7 @@ function StatusBadge({ status }: { status: string }) {
     }
 
     return (
-        <span className={`px-3 py-1 rounded-full text-xs capitalize ${map[status] || 'bg-gray-100 text-gray-500'}`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm capitalize ${map[status] || 'bg-gray-100 text-gray-500'}`}>
             {status}
         </span>
     )
@@ -481,7 +483,7 @@ function ReasonBadge({ reason }: { reason: string }) {
     else if (lower.includes('scam') || lower.includes('quyền riêng tư')) color = "bg-purple-50 text-purple-600"
 
     return (
-        <span className={`px-3 py-1 rounded-full text-xs ${color}`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm ${color}`}>
             {reason}
         </span>
     )
