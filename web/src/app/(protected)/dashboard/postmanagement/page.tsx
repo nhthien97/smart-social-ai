@@ -10,6 +10,7 @@ import {
     MessageCircle,
     Loader2,
     AlertTriangle,
+    ChevronDown,
 } from "lucide-react"
 import {
     fetchAdminPosts,
@@ -21,6 +22,7 @@ import {
 export default function PostsManagementPage() {
     const [search, setSearch] = useState("")
     const [status, setStatus] = useState("all")
+    const [statusOpen, setStatusOpen] = useState(false)
     const [page, setPage] = useState(1)
     const [posts, setPosts] = useState<any[]>([])
     const [total, setTotal] = useState(0)
@@ -84,152 +86,197 @@ export default function PostsManagementPage() {
         }
     }
 
+    
     return (
-        <div className="space-y-6">
-
-            {/* ================= HEADER ================= */}
-            <div className="flex items-center justify-between">
+        <div className="admin-posts-page space-y-6">
+            {/* HEADER */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-semibold text-gray-900">
+                    <p className="admin-eyebrow">ADMINISTRATION / CONTENT</p>
+                    <h1 className="admin-page-title mt-1 text-3xl font-bold">
                         Posts Management
                     </h1>
-                    <p className="text-gray-500 mt-1">
+                    <p className="admin-page-subtitle mt-2">
                         Monitor and moderate all posts
                     </p>
                 </div>
 
-                <div className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium shadow-sm">
-                    Total: {total}
+                <div className="admin-posts-total">
+                    <span>Total posts</span>
+                    <strong>{total}</strong>
                 </div>
             </div>
 
-            {/* ================= SEARCH + FILTER ================= */}
-            <div className="bg-white border rounded-2xl p-5 shadow-sm flex gap-4 items-center">
+            {/* SEARCH + FILTER */}
+            <section className="admin-surface admin-posts-toolbar">
+                <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="admin-posts-search relative min-w-0 flex-1">
+                        <Search
+                            size={19}
+                            className="absolute left-4 top-1/2 -translate-y-1/2"
+                        />
+                        <input
+                            value={search}
+                            onChange={(e) => {
+                                setSearch(e.target.value)
+                                setPage(1)
+                            }}
+                            placeholder="Search by content, user..."
+                            aria-label="Search posts by content or user"
+                            className="admin-control-input w-full rounded-xl py-3 pl-11 pr-4"
+                        />
+                    </div>
 
-                <div className="relative flex-1">
-                    <Search
-                        size={18}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <input
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value)
-                            setPage(1)
-                        }}
-                        placeholder="Search by content, user..."
-                        className="w-full border rounded-xl pl-10 pr-4 py-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                    />
-                </div>
+                    
+<div className="admin-posts-status-dropdown">
+    <button
+        type="button"
+        className="admin-posts-status-trigger"
+        aria-label="Filter posts by status"
+        aria-expanded={statusOpen}
+        onClick={() => setStatusOpen((open) => !open)}
+    >
+        <span>
+            {{
+                all: "All Status",
+                active: "Active",
+                hidden: "Hidden",
+                pending: "Pending",
+                rejected: "Rejected",
+                deleted: "Deleted",
+            }[status] || "All Status"}
+        </span>
+        <ChevronDown
+            size={17}
+            className={statusOpen ? "is-open" : ""}
+        />
+    </button>
 
-                <select
-                    value={status}
-                    onChange={(e) => {
-                        setStatus(e.target.value)
+    {statusOpen && (
+        <div className="admin-posts-status-menu">
+            {[
+                { value: "all", label: "All Status" },
+                { value: "active", label: "Active" },
+                { value: "hidden", label: "Hidden" },
+                { value: "pending", label: "Pending" },
+                { value: "rejected", label: "Rejected" },
+                { value: "deleted", label: "Deleted" },
+            ].map((option) => (
+                <button
+                    type="button"
+                    key={option.value}
+                    className={`admin-posts-status-option ${
+                        status === option.value ? "is-selected" : ""
+                    }`}
+                    onClick={() => {
+                        setStatus(option.value)
                         setPage(1)
+                        setStatusOpen(false)
                     }}
-                    className="border rounded-xl px-4 py-2.5 text-gray-800 hover:bg-gray-50 transition"
                 >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="hidden">Hidden</option>
-                    <option value="pending">Pending</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="deleted">Deleted</option>
-                </select>
-            </div>
+                    {option.label}
+                </button>
+            ))}
+        </div>
+    )}
+</div>
 
-            {/* ================= POSTS ================= */}
+                </div>
 
+                <div className="admin-posts-toolbar-footer">
+                    <span>
+                        Page <strong>{page}</strong>
+                        {totalPages > 0 && (
+                            <> of <strong>{totalPages}</strong></>
+                        )}
+                    </span>
+                    <span>
+                        {search ? `Search: "${search}"` : "All posts"}
+                    </span>
+                </div>
+            </section>
+
+            {/* POSTS */}
             {loading ? (
-                <div className="flex justify-center py-16">
-                    <Loader2 className="animate-spin text-gray-400" size={32} />
+                <div className="admin-surface flex justify-center py-16">
+                    <Loader2
+                        className="animate-spin"
+                        style={{ color: "#c13584" }}
+                        size={32}
+                    />
                 </div>
             ) : posts.length === 0 ? (
-                <div className="bg-white border rounded-2xl p-16 text-center text-gray-400 shadow-sm">
-                    No posts found
+                <div className="admin-surface admin-posts-empty">
+                    <Search size={28} />
+                    <h2>No posts found</h2>
+                    <p>Try another search term or status filter.</p>
                 </div>
             ) : (
                 <div className="space-y-4">
                     {posts.map((p) => (
-                        <div
-                            key={p._id}
-                            className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition"
-                        >
-                            <div className="flex justify-between gap-6">
+                        <article key={p._id} className="admin-surface admin-post-card">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                                {/* AUTHOR */}
+                                <div className="admin-post-avatar">
+                                    {(p.user_name || p.username || "U")
+                                        .slice(0, 2)
+                                        .toUpperCase()}
+                                </div>
 
-                                {/* LEFT */}
-                                <div className="flex gap-4 flex-1 min-w-0">
+                                {/* CONTENT */}
+                                <div className="min-w-0 flex-1 space-y-3">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h2 className="admin-post-author">
+                                            {p.user_name || "Unknown"}
+                                        </h2>
 
-                                    {/* Avatar */}
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-semibold">
-                                        {(p.user_name || p.username || "U")
-                                            .slice(0, 2)
-                                            .toUpperCase()}
+                                        {p.username && (
+                                            <span className="admin-post-username">
+                                                @{p.username}
+                                            </span>
+                                        )}
+
+                                        <StatusBadge status={p.status} />
+
+                                        {p.report_count > 0 && (
+                                            <span className="admin-post-reports">
+                                                <AlertTriangle size={13} />
+                                                {p.report_count} reports
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <div className="space-y-3 min-w-0 flex-1">
+                                    <p className="admin-post-content line-clamp-3">
+                                        {p.content || "(No content)"}
+                                    </p>
 
-                                        {/* USER + STATUS */}
-                                        <div className="flex items-center gap-3 flex-wrap">
-                                            <p className="font-semibold text-gray-900">
-                                                {p.user_name || "Unknown"}
-                                            </p>
-
-                                            {p.username && (
-                                                <span className="text-sm text-gray-400">
-                                                    @{p.username}
-                                                </span>
-                                            )}
-
-                                            <StatusBadge status={p.status} />
-
-                                            {p.report_count > 0 && (
-                                                <span className="flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">
-                                                    <AlertTriangle size={12} />
-                                                    {p.report_count} reports
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* CONTENT */}
-                                        <p className="text-gray-800 line-clamp-2 leading-relaxed">
-                                            {p.content || "(No content)"}
-                                        </p>
-
-                                        {/* META */}
-                                        <div className="flex items-center gap-6 text-sm text-gray-500 flex-wrap">
-                                            <span className="flex items-center gap-1">
-                                                <Heart size={16} />
-                                                {p.likes_count || 0}
-                                            </span>
-
-                                            <span className="flex items-center gap-1">
-                                                <MessageCircle size={16} />
-                                                {p.comments_count || 0}
-                                            </span>
-
-                                            <span>
-                                                {p.created_at
-                                                    ? new Date(
-                                                        p.created_at
-                                                    ).toLocaleDateString(
-                                                        "vi-VN"
-                                                    )
-                                                    : ""}
-                                            </span>
-                                        </div>
+                                    <div className="admin-post-meta">
+                                        <span>
+                                            <Heart size={16} />
+                                            {p.likes_count || 0}
+                                        </span>
+                                        <span>
+                                            <MessageCircle size={16} />
+                                            {p.comments_count || 0}
+                                        </span>
+                                        <span>
+                                            {p.created_at
+                                                ? new Date(p.created_at).toLocaleDateString("vi-VN")
+                                                : ""}
+                                        </span>
                                     </div>
                                 </div>
 
                                 {/* ACTIONS */}
-                                <div className="flex gap-2">
+                                <div className="admin-post-actions">
                                     <ActionButton
                                         onClick={() => onToggleHide(p)}
                                         disabled={actionLoading === p._id}
                                         color="orange"
                                     >
-                                        {p.status === "hidden" ? (
+                                        {actionLoading === p._id ? (
+                                            <Loader2 size={18} className="animate-spin" />
+                                        ) : p.status === "hidden" ? (
                                             <Eye size={18} />
                                         ) : (
                                             <EyeOff size={18} />
@@ -241,28 +288,36 @@ export default function PostsManagementPage() {
                                         disabled={actionLoading === p._id}
                                         color="red"
                                     >
-                                        <Trash2 size={18} />
+                                        {actionLoading === p._id ? (
+                                            <Loader2 size={18} className="animate-spin" />
+                                        ) : (
+                                            <Trash2 size={18} />
+                                        )}
                                     </ActionButton>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     ))}
                 </div>
             )}
 
-            {/* ================= PAGINATION ================= */}
+            {/* PAGINATION */}
             {totalPages > 1 && (
-                <div className="flex justify-between items-center pt-4">
-                    <p className="text-sm text-gray-500">
-                        Showing {(page - 1) * PAGE_SIZE + 1} –
-                        {Math.min(page * PAGE_SIZE, total)} of {total}
+                <div className="admin-posts-pagination">
+                    <p>
+                        Showing{" "}
+                        <strong>{(page - 1) * PAGE_SIZE + 1}</strong>
+                        {" – "}
+                        <strong>{Math.min(page * PAGE_SIZE, total)}</strong>
+                        {" of "}
+                        <strong>{total}</strong>
                     </p>
 
                     <div className="flex gap-2">
                         <button
                             disabled={page <= 1}
                             onClick={() => setPage(page - 1)}
-                            className="px-3 py-1.5 border rounded-lg text-sm hover:bg-gray-100 disabled:opacity-40 transition"
+                            className="admin-page-button rounded-lg px-4 py-2"
                         >
                             Previous
                         </button>
@@ -270,7 +325,7 @@ export default function PostsManagementPage() {
                         <button
                             disabled={page >= totalPages}
                             onClick={() => setPage(page + 1)}
-                            className="px-3 py-1.5 border rounded-lg text-sm hover:bg-gray-100 disabled:opacity-40 transition"
+                            className="admin-page-button rounded-lg px-4 py-2"
                         >
                             Next
                         </button>
@@ -280,6 +335,7 @@ export default function PostsManagementPage() {
         </div>
     )
 }
+
 
 /* ================= COMPONENTS ================= */
 
