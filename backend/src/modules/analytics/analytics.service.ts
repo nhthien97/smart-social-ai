@@ -122,20 +122,39 @@ export class AnalyticsService {
 
     // ============ Growth Chart (DAU/MAU, user/post growth) ============
 
+    
     /** UC: Biểu đồ tăng trưởng theo ngày/tuần/tháng */
     async getGrowthChart(dto: QueryAnalyticsDto): Promise<any[]> {
         const { period = AnalyticsPeriod.DAY } = dto;
-        const from = dto.from ? new Date(dto.from) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-        const to = dto.to ? new Date(dto.to) : new Date();
+        const now = new Date();
 
-        // Group by period format
+        // Mặc định lấy 12 tháng khi xem biểu đồ theo tháng,
+        // giữ nguyên khoảng 30 ngày cho chế độ ngày/tuần.
+        const defaultFrom = new Date(now);
+        if (period === AnalyticsPeriod.MONTH) {
+            defaultFrom.setDate(1);
+            defaultFrom.setMonth(defaultFrom.getMonth() - 11);
+            defaultFrom.setHours(0, 0, 0, 0);
+        } else {
+            defaultFrom.setTime(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        }
+
+        const from = dto.from ? new Date(dto.from) : defaultFrom;
+        const to = dto.to ? new Date(dto.to) : now;
+
         let dateGroup: any;
         if (period === AnalyticsPeriod.DAY) {
-            dateGroup = { $dateToString: { format: '%Y-%m-%d', date: '$created_at' } };
+            dateGroup = {
+                $dateToString: { format: '%Y-%m-%d', date: '$created_at' },
+            };
         } else if (period === AnalyticsPeriod.WEEK) {
-            dateGroup = { $dateToString: { format: '%Y-W%V', date: '$created_at' } };
+            dateGroup = {
+                $dateToString: { format: '%Y-W%V', date: '$created_at' },
+            };
         } else {
-            dateGroup = { $dateToString: { format: '%Y-%m', date: '$created_at' } };
+            dateGroup = {
+                $dateToString: { format: '%Y-%m', date: '$created_at' },
+            };
         }
 
         const dateFilter = { created_at: { $gte: from, $lte: to } };
@@ -158,21 +177,55 @@ export class AnalyticsService {
             ]),
         ]);
 
-        // Merge into single array
+        const userMap = new Map<string, number>(
+            userGrowth.map((r: any) => [r._id, r.count]),
+        );
+        const postMap = new Map<string, number>(
+            postGrowth.map((r: any) => [r._id, r.count]),
+        );
+        const msgMap = new Map<string, number>(
+            messageGrowth.map((r: any) => [r._id, r.count]),
+        );
+
+        // Tạo đầy đủ các mốc thời gian, kể cả tháng không có dữ liệu.
+        if (period === AnalyticsPeriod.MONTH) {
+            const result: any[] = [];
+            const cursor = new Date(from.getFullYear(), from.getMonth(), 1);
+            const end = new Date(to.getFullYear(), to.getMonth(), 1);
+
+            while (cursor <= end) {
+                const date = `${cursor.getFullYear()}-${String(
+                    cursor.getMonth() + 1,
+                ).padStart(2, '0')}`;
+
+                result.push({
+                    date,
+                    new_users: userMap.get(date) ?? 0,
+                    new_posts: postMap.get(date) ?? 0,
+                    new_messages: msgMap.get(date) ?? 0,
+                });
+
+                cursor.setMonth(cursor.getMonth() + 1);
+            }
+
+            return result;
+        }
+
         const allDates = new Set<string>();
-        [userGrowth, postGrowth, messageGrowth].forEach(arr => arr.forEach(r => allDates.add(r._id)));
+        [userGrowth, postGrowth, messageGrowth].forEach((arr: any[]) =>
+            arr.forEach((r: any) => allDates.add(r._id)),
+        );
 
-        const userMap = new Map(userGrowth.map(r => [r._id, r.count]));
-        const postMap = new Map(postGrowth.map(r => [r._id, r.count]));
-        const msgMap = new Map(messageGrowth.map(r => [r._id, r.count]));
-
-        return Array.from(allDates).sort().map(date => ({
-            date,
-            new_users: userMap.get(date) || 0,
-            new_posts: postMap.get(date) || 0,
-            new_messages: msgMap.get(date) || 0,
-        }));
+        return Array.from(allDates)
+            .sort()
+            .map((date) => ({
+                date,
+                new_users: userMap.get(date) ?? 0,
+                new_posts: postMap.get(date) ?? 0,
+                new_messages: msgMap.get(date) ?? 0,
+            }));
     }
+
 
     // ============ Engagement Stats ============
 
@@ -235,8 +288,14 @@ export class AnalyticsService {
         const query: any = {};
         if (from || to) {
             query.stat_date = {};
-            if (from) query.stat_date.$gte = new Date(from);
-            if (to) query.stat_date.$lte = new Date(to);
+            if (from) {
+    query.stat_date.$gte = new Date(`${from}T00:00:00.000Z`);
+}
+if (to) {
+    query.stat_date.$lt = new Date(
+        new Date(`${to}T00:00:00.000Z`).getTime() + 24 * 60 * 60 * 1000,
+    );
+}
         }
 
         const total = await this.dailyStatsModel.countDocuments(query);
@@ -272,9 +331,29 @@ export class AnalyticsService {
     /** Tính toán và lưu stats cho ngày hôm nay */
     async computeTodayStats(): Promise<void> {
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-        const dateFilter = { created_at: { $gte: today, $lt: tomorrow } };
+
+// Xác định ngày hiện tại theo múi giờ Việt Nam
+const vietnamDate = new Date(
+    now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+);
+
+const today = new Date(
+    Date.UTC(
+        vietnamDate.getFullYear(),
+        vietnamDate.getMonth(),
+        vietnamDate.getDate(),
+    ),
+);
+
+const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+
+// Truy vấn dữ liệu theo ngày Việt Nam, quy đổi sang UTC
+const dateFilter = {
+    created_at: {
+        $gte: new Date(today.getTime() - 7 * 60 * 60 * 1000),
+        $lt: new Date(tomorrow.getTime() - 7 * 60 * 60 * 1000),
+    },
+};
 
         try {
             const [
@@ -321,16 +400,17 @@ export class AnalyticsService {
                 { upsert: true },
             );
 
-            // Also update monthly
+                       // Also update monthly
             await this.monthlyStatsModel.findOneAndUpdate(
-                { stat_year: now.getFullYear(), stat_month: now.getMonth() + 1 },
+                {
+                    stat_year: vietnamDate.getFullYear(),
+                    stat_month: vietnamDate.getMonth() + 1,
+                },
                 {
                     $set: {
                         total_users: totalUsers,
                         total_posts: totalPosts,
                         total_groups: totalGroups,
-                    },
-                    $inc: {
                         new_users: newUsers,
                         new_posts: newPosts,
                         active_users: activeUsers,
