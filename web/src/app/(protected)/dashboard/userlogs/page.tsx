@@ -142,7 +142,7 @@ export default function UserActivityLogsPage() {
     ]
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="user-logs-page p-6 space-y-6">
 
             {/* HEADER */}
             <div className="flex justify-between items-center">
@@ -157,7 +157,7 @@ export default function UserActivityLogsPage() {
 
                 <button
                     onClick={handleExport}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+                    className="user-logs-export flex items-center gap-2 px-5 py-2.5 font-medium"
                 >
                     <Download size={18} />
                     Export
@@ -169,8 +169,8 @@ export default function UserActivityLogsPage() {
                 {statCards.map((s) => {
                     const cfg = getConfig(s.key)
                     return (
-                        <div key={s.key} className="bg-white rounded-xl border p-4 flex items-center gap-3 shadow-sm">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${cfg.bg}`}>
+                        <div key={s.key} className="user-logs-summary-card flex items-center gap-3 p-4">
+                            <div className={`user-logs-summary-icon w-10 h-10 rounded-lg flex items-center justify-center ${cfg.bg}`}>
                                 <span className={cfg.color}>{cfg.icon}</span>
                             </div>
                             <div>
@@ -183,7 +183,7 @@ export default function UserActivityLogsPage() {
             </div>
 
             {/* SEARCH + FILTER */}
-            <div className="bg-white border rounded-xl p-4 space-y-4">
+            <div className="user-logs-search-panel p-4 space-y-4">
                 <div className="flex gap-4">
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -191,7 +191,7 @@ export default function UserActivityLogsPage() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Tìm theo tên người dùng, email..."
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
+                            className="user-logs-input w-full pl-10 pr-4 py-2.5 outline-none text-gray-700"
                         />
                     </div>
                     <button
@@ -243,7 +243,7 @@ export default function UserActivityLogsPage() {
             </div>
 
             {/* LOG LIST */}
-            <div className="bg-white rounded-xl border divide-y">
+            <div className="user-logs-list divide-y">
                 {loading && logs.length === 0 ? (
                     <div className="p-12 text-center text-gray-400">Đang tải...</div>
                 ) : logs.length === 0 ? (
@@ -252,7 +252,7 @@ export default function UserActivityLogsPage() {
                     logs.map((log) => {
                         const cfg = getConfig(log.activity_type)
                         return (
-                            <div key={log._id} className="flex justify-between p-5 hover:bg-gray-50 transition">
+                            <div key={log._id} className="user-logs-item flex justify-between p-5 transition">
                                 <div className="flex gap-4">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${cfg.bg}`}>
                                         <span className={cfg.color}>{cfg.icon}</span>
