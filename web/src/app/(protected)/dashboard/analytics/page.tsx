@@ -132,89 +132,120 @@ export default function AnalyticsPage() {
     const dailyTotalPages = Math.ceil(dailyTotal / dailyLimit)
 
     return (
-        <div className="space-y-6">
-            {/* HEADER */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h1 className="text-3xl font-semibold text-gray-900">Analytics & Statistics</h1>
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleRefresh}
-                        disabled={refreshing}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm"
-                    >
-                        {refreshing ? "Refreshing..." : "⟳ Refresh Stats"}
-                    </button>
-                    <button
-                        onClick={handleExport}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm border"
-                    >
-                        ↓ Export JSON
-                    </button>
-                </div>
-            </div>
+        <div className="admin-analytics-page space-y-6">
+            
+{/* HEADER */}
+<div className="admin-analytics-header flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <p className="admin-analytics-eyebrow">
+            ADMINISTRATION / INSIGHTS
+        </p>
+        <h1 className="text-3xl font-bold">
+            Analytics &amp; Statistics
+        </h1>
+        <p className="admin-analytics-subtitle">
+            Monitor platform performance and activity
+        </p>
+    </div>
 
-            {/* TABS */}
-            <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
-                <button
-                    onClick={() => setActiveTab("daily")}
-                    className={`px-5 py-2 rounded-md text-sm font-medium transition ${
-                        activeTab === "daily"
-                            ? "bg-white text-blue-600 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                    }`}
-                >
-                    Daily Stats
-                </button>
-                <button
-                    onClick={() => setActiveTab("monthly")}
-                    className={`px-5 py-2 rounded-md text-sm font-medium transition ${
-                        activeTab === "monthly"
-                            ? "bg-white text-blue-600 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                    }`}
-                >
-                    Monthly Stats
-                </button>
-            </div>
+    <div className="admin-analytics-actions flex flex-wrap gap-3">
+        <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="admin-analytics-button admin-analytics-button-primary"
+        >
+            {refreshing ? "Refreshing..." : "⟳ Refresh Stats"}
+        </button>
+
+        <button
+            onClick={handleExport}
+            className="admin-analytics-button admin-analytics-button-secondary"
+        >
+            ↓ Export JSON
+        </button>
+    </div>
+</div>
+
+
+            
+{/* TABS */}
+<div className="admin-analytics-tabs">
+    <button
+        onClick={() => setActiveTab("daily")}
+        className={`admin-analytics-tab ${
+            activeTab === "daily" ? "is-active" : ""
+        }`}
+    >
+        Daily Stats
+    </button>
+
+    <button
+        onClick={() => setActiveTab("monthly")}
+        className={`admin-analytics-tab ${
+            activeTab === "monthly" ? "is-active" : ""
+        }`}
+    >
+        Monthly Stats
+    </button>
+</div>
+
 
             {/* DAILY TAB */}
             {activeTab === "daily" && (
                 <div className="space-y-4">
-                    {/* FILTERS */}
-                    <div className="bg-white rounded-xl border p-4">
-                        <div className="flex flex-wrap items-end gap-4">
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">From</label>
-                                <input
-                                    type="date"
-                                    value={dailyFrom}
-                                    onChange={(e) => { setDailyFrom(e.target.value); setDailyPage(1) }}
-                                    className="border rounded-lg px-3 py-2 text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">To</label>
-                                <input
-                                    type="date"
-                                    value={dailyTo}
-                                    onChange={(e) => { setDailyTo(e.target.value); setDailyPage(1) }}
-                                    className="border rounded-lg px-3 py-2 text-sm"
-                                />
-                            </div>
-                            {(dailyFrom || dailyTo) && (
-                                <button
-                                    onClick={() => { setDailyFrom(""); setDailyTo(""); setDailyPage(1) }}
-                                    className="text-sm text-red-500 hover:text-red-700"
-                                >
-                                    Clear filters
-                                </button>
-                            )}
-                            <span className="text-sm text-gray-500 ml-auto">{dailyTotal} records</span>
-                        </div>
-                    </div>
+                   
+{/* FILTERS */}
+<div className="admin-analytics-filter">
+    <div className="admin-analytics-date-group">
+        <label htmlFor="analytics-date-from">From</label>
+        <input
+            id="analytics-date-from"
+            type="date"
+            value={dailyFrom}
+            onChange={(e) => {
+                setDailyFrom(e.target.value)
+                setDailyPage(1)
+            }}
+            className="admin-analytics-date-input"
+        />
+    </div>
+
+    <div className="admin-analytics-date-group">
+        <label htmlFor="analytics-date-to">To</label>
+        <input
+            id="analytics-date-to"
+            type="date"
+            value={dailyTo}
+            onChange={(e) => {
+                setDailyTo(e.target.value)
+                setDailyPage(1)
+            }}
+            className="admin-analytics-date-input"
+        />
+    </div>
+
+    {(dailyFrom || dailyTo) && (
+        <button
+            type="button"
+            onClick={() => {
+                setDailyFrom("")
+                setDailyTo("")
+                setDailyPage(1)
+            }}
+            className="admin-analytics-clear-button"
+        >
+            Clear filters
+        </button>
+    )}
+
+    <span className="admin-analytics-record-count">
+        {dailyTotal} records
+    </span>
+</div>
+
 
                     {/* TABLE */}
-                    <div className="bg-white rounded-xl border overflow-x-auto">
+                    <div className="admin-analytics-table-wrap">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-gray-50 border-b">
@@ -232,14 +263,16 @@ export default function AnalyticsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {loading ? (
-                                    <tr>
-                                        <td colSpan={11} className="text-center py-12 text-gray-400">
-                                            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
-                                        </td>
-                                    </tr>
-                                ) : dailyStats.length === 0 ? (
-                                    <tr>
+                                
+{loading ? (
+    <tr>
+        <td colSpan={11} className="text-center py-12 text-gray-400">
+            <div className="inline-block h-7 w-7 animate-spin rounded-full border-2 border-transparent border-b-[#c13584]" />
+        </td>
+    </tr>
+) : dailyStats.length === 0 ? (
+    <tr>
+
                                         <td colSpan={11} className="text-center py-12 text-gray-400">
                                             No daily stats found. Click &quot;Refresh Stats&quot; to compute today&apos;s data.
                                         </td>
@@ -306,14 +339,14 @@ export default function AnalyticsPage() {
             {activeTab === "monthly" && (
                 <div className="space-y-4">
                     {/* FILTERS */}
-                    <div className="bg-white rounded-xl border p-4">
+                    <div className="admin-analytics-filter">
                         <div className="flex flex-wrap items-end gap-4">
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">Year</label>
                                 <select
                                     value={monthlyYear}
                                     onChange={(e) => setMonthlyYear(e.target.value)}
-                                    className="border rounded-lg px-3 py-2 text-sm"
+                                    className="admin-analytics-select"
                                 >
                                     <option value="">All years</option>
                                     {getYearOptions().map((y) => (
@@ -326,7 +359,7 @@ export default function AnalyticsPage() {
                                 <select
                                     value={monthlyLimit}
                                     onChange={(e) => setMonthlyLimit(Number(e.target.value))}
-                                    className="border rounded-lg px-3 py-2 text-sm"
+                                    className="admin-analytics-select"
                                 >
                                     <option value={6}>Last 6 months</option>
                                     <option value={12}>Last 12 months</option>
@@ -341,12 +374,14 @@ export default function AnalyticsPage() {
                                     Clear filter
                                 </button>
                             )}
-                            <span className="text-sm text-gray-500 ml-auto">{monthlyStats.length} records</span>
+                            <span className="admin-analytics-record-count">
+    {monthlyStats.length} {monthlyStats.length === 1 ? "record" : "records"}
+</span>
                         </div>
                     </div>
 
                     {/* TABLE */}
-                    <div className="bg-white rounded-xl border overflow-x-auto">
+                    <div className="admin-analytics-table-wrap">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-gray-50 border-b">
@@ -367,7 +402,7 @@ export default function AnalyticsPage() {
                                 {loading ? (
                                     <tr>
                                         <td colSpan={11} className="text-center py-12 text-gray-400">
-                                            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
+                                            <div className="inline-block h-7 w-7 animate-spin rounded-full border-2 border-transparent border-b-[#c13584]" />
                                         </td>
                                     </tr>
                                 ) : monthlyStats.length === 0 ? (
@@ -438,6 +473,7 @@ function fmt(n: number | undefined | null): string {
 function formatDate(d: string): string {
     try {
         return new Date(d).toLocaleDateString("en-US", {
+            timeZone: "Asia/Ho_Chi_Minh",
             year: "numeric",
             month: "short",
             day: "numeric",
