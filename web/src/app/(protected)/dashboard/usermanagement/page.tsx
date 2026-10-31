@@ -1,10 +1,12 @@
+
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Search, Filter, Eye, Ban, Trash2 } from "lucide-react"
+import { Search, Filter, Eye, Ban, Trash2, Users, ShieldCheck, UserCheck } from "lucide-react"
 import api from "@/lib/axios"
 
 /* ===================== TYPES ===================== */
+
 type User = {
     id: string
     username: string
@@ -15,6 +17,7 @@ type User = {
 }
 
 /* ===================== PAGE ===================== */
+
 export default function UserManagementPage() {
     const [usersData, setUsersData] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
@@ -28,6 +31,7 @@ export default function UserManagementPage() {
     const PAGE_SIZE = 8
 
     /* ===== FETCH USERS ===== */
+
     useEffect(() => {
         fetchUsers()
     }, [])
@@ -54,6 +58,7 @@ export default function UserManagementPage() {
 
             setUsersData(mapped)
         } catch (err) {
+            console.error(err)
             alert("Không lấy được danh sách user")
         } finally {
             setLoading(false)
@@ -61,6 +66,7 @@ export default function UserManagementPage() {
     }
 
     /* ===== FILTER ===== */
+
     const filteredUsers = useMemo(() => {
         return usersData.filter((u) => {
             const searchOk =
@@ -82,10 +88,11 @@ export default function UserManagementPage() {
 
     /* ===== ACTIONS ===== */
 
-    // ✅ SỬA CHUẨN THEO BACKEND
     const onBanToggle = async (u: User) => {
         const action = u.status === "active" ? "chặn" : "bỏ chặn"
+
         if (!confirm(`Bạn có chắc muốn ${action} user ${u.username}?`)) return
+
         try {
             if (u.status === "active") {
                 await api.put(`/admin/users/${u.id}/block`)
@@ -111,6 +118,7 @@ export default function UserManagementPage() {
 
     const onDelete = async (u: User) => {
         if (!confirm(`Xoá user ${u.username}? Hành động này không thể hoàn tác.`)) return
+
         try {
             await api.delete(`/admin/users/${u.id}`)
             setUsersData(prev => prev.filter(user => user.id !== u.id))
@@ -127,25 +135,47 @@ export default function UserManagementPage() {
     }
 
     /* ===================== UI ===================== */
+
     return (
-        <div className="space-y-6">
-            {/* TITLE */}
-            <div>
-                <h1 className="text-3xl font-semibold text-gray-900">
-                    User Management
-                </h1>
-                <p className="text-gray-600 mt-1">
-                    Manage and monitor all users
-                </p>
+        <div className="admin-dashboard-page admin-users-page space-y-6">
+            {/* PAGE HEADER */}
+            <div className="admin-users-heading flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p className="admin-eyebrow">ADMINISTRATION / USERS</p>
+                    <h1 className="admin-page-title mt-1 text-3xl font-bold">
+                        User Management
+                    </h1>
+                    <p className="admin-page-subtitle mt-2">
+                        Manage and monitor all users
+                    </p>
+                </div>
+
+                <div className="admin-users-summary flex flex-wrap gap-3">
+                    <SummaryCard
+                        icon={<Users size={19} />}
+                        label="Total users"
+                        value={usersData.length}
+                    />
+                    <SummaryCard
+                        icon={<UserCheck size={19} />}
+                        label="Active"
+                        value={usersData.filter(user => user.status === "active").length}
+                    />
+                    <SummaryCard
+                        icon={<ShieldCheck size={19} />}
+                        label="Restricted"
+                        value={usersData.filter(user => user.status === "banned").length}
+                    />
+                </div>
             </div>
 
             {/* SEARCH + FILTER */}
-            <div className="bg-white border rounded-xl p-4 space-y-4">
-                <div className="flex gap-4">
-                    <div className="relative flex-1">
+            <section className="admin-surface admin-users-toolbar space-y-4">
+                <div className="flex flex-col gap-3 md:flex-row">
+                    <div className="admin-search-field relative min-w-0 flex-1">
                         <Search
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                            size={18}
+                            className="absolute left-4 top-1/2 -translate-y-1/2"
+                            size={19}
                         />
                         <input
                             value={search}
@@ -154,23 +184,31 @@ export default function UserManagementPage() {
                                 setPage(1)
                             }}
                             placeholder="Search by username or email..."
-                            className="w-full border rounded-lg pl-10 pr-4 py-2 text-gray-900 placeholder-gray-400"
+                            aria-label="Search users by username or email"
+                            className="admin-control-input w-full rounded-xl py-3 pl-11 pr-4"
                         />
                     </div>
 
                     <button
+                        type="button"
                         onClick={() => setShowFilter(!showFilter)}
-                        className="flex items-center gap-2 border px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        aria-expanded={showFilter}
+                        className={`admin-gradient-outline-button flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold ${
+                            showFilter ? "is-active" : ""
+                        }`}
                     >
-                        <Filter size={16} />
+                        <Filter size={17} />
                         Filters
+                        <span className="admin-filter-count">
+                            {[role !== "all", status !== "all"].filter(Boolean).length || ""}
+                        </span>
                     </button>
                 </div>
 
                 {showFilter && (
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="admin-users-filter-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="admin-control-label mb-2 block">
                                 Status
                             </label>
                             <select
@@ -179,16 +217,16 @@ export default function UserManagementPage() {
                                     setStatus(e.target.value)
                                     setPage(1)
                                 }}
-                                className="w-full border rounded-lg px-3 py-2 text-gray-900"
+                                className="admin-control-input w-full rounded-xl px-4 py-3"
                             >
-                                <option value="all">All</option>
+                                <option value="all">All statuses</option>
                                 <option value="active">Active</option>
                                 <option value="banned">Banned</option>
                             </select>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="admin-control-label mb-2 block">
                                 Role
                             </label>
                             <select
@@ -197,9 +235,9 @@ export default function UserManagementPage() {
                                     setRole(e.target.value)
                                     setPage(1)
                                 }}
-                                className="w-full border rounded-lg px-3 py-2 text-gray-900"
+                                className="admin-control-input w-full rounded-xl px-4 py-3"
                             >
-                                <option value="all">All</option>
+                                <option value="all">All roles</option>
                                 <option value="user">User</option>
                                 <option value="moderator">Moderator</option>
                                 <option value="admin">Admin</option>
@@ -207,140 +245,210 @@ export default function UserManagementPage() {
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* TABLE */}
-            <div className="bg-white border rounded-xl overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th className="p-4 text-left">User</th>
-                            <th>Email</th>
-                            <th className="text-center">Role</th>
-                            <th className="text-center">Status</th>
-                            <th className="text-center">Created</th>
-                            <th className="text-right pr-4">Actions</th>
-                        </tr>
-                    </thead>
+                <div className="admin-users-toolbar-footer flex flex-wrap items-center justify-between gap-2">
+                    <span>
+                        Showing <strong>{users.length}</strong> of{" "}
+                        <strong>{filteredUsers.length}</strong> users
+                    </span>
+                    <span>
+                        {search ? `Search: "${search}"` : "All registered users"}
+                    </span>
+                </div>
+            </section>
 
-                    <tbody>
-                        {loading ? (
+            {/* USERS TABLE */}
+            <section className="admin-surface admin-users-table-card">
+                <div className="admin-table-heading flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+                    <div>
+                        <h2 className="text-base font-bold">User directory</h2>
+                        <p className="mt-1 text-sm">
+                            Account details, roles and status
+                        </p>
+                    </div>
+                    <span className="admin-table-total">
+                        {filteredUsers.length} records
+                    </span>
+                </div>
+
+                <div className="admin-table-scroll overflow-x-auto">
+                    <table className="admin-users-table w-full text-sm">
+                        <thead>
                             <tr>
-                                <td colSpan={6} className="text-center py-10 text-gray-500">
-                                    Loading users...
-                                </td>
+                                <th className="text-left">User</th>
+                                <th className="text-left">Email</th>
+                                <th className="text-center">Role</th>
+                                <th className="text-center">Status</th>
+                                <th className="text-center">Created</th>
+                                <th className="text-right">Actions</th>
                             </tr>
-                        ) : (
-                            users.map((u) => (
-                                <tr
-                                    key={u.id}
-                                    className="border-t text-gray-900 hover:bg-gray-50"
-                                >
-                                    <td className="p-4 font-medium">
-                                        {u.username}
-                                    </td>
-                                    <td>{u.email}</td>
+                        </thead>
 
-                                    <td className="text-center">
-                                        <RoleBadge role={u.role} />
-                                    </td>
-
-                                    <td className="text-center">
-                                        <StatusBadge status={u.status} />
-                                    </td>
-
-                                    <td className="text-center">
-                                        {u.created}
-                                    </td>
-
-                                    <td className="text-right pr-4">
-                                        <div className="flex justify-end gap-3">
-                                            <IconButton color="blue" onClick={() => onView(u)}>
-                                                <Eye size={18} />
-                                            </IconButton>
-                                            <IconButton
-                                                color="orange"
-                                                onClick={() => onBanToggle(u)}
-                                            >
-                                                <Ban size={18} />
-                                            </IconButton>
-                                            <IconButton
-                                                color="red"
-                                                onClick={() => onDelete(u)}
-                                            >
-                                                <Trash2 size={18} />
-                                            </IconButton>
-                                        </div>
+                        <tbody>
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6} className="admin-users-empty">
+                                        <span className="admin-loading-spinner" />
+                                        <span>Loading users...</span>
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : users.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="admin-users-empty">
+                                        <Search size={22} />
+                                        <span>No users match your search or filters.</span>
+                                    </td>
+                                </tr>
+                            ) : (
+                                users.map((u) => (
+                                    <tr key={u.id}>
+                                        <td>
+                                            <div className="admin-user-identity">
+                                                <div className="admin-user-avatar">
+                                                    {u.username?.charAt(0).toUpperCase() || "U"}
+                                                </div>
+                                                <span className="admin-user-name">
+                                                    {u.username}
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <td className="admin-user-email">
+                                            {u.email}
+                                        </td>
+
+                                        <td className="text-center">
+                                            <RoleBadge role={u.role} />
+                                        </td>
+
+                                        <td className="text-center">
+                                            <StatusBadge status={u.status} />
+                                        </td>
+
+                                        <td className="admin-user-created text-center">
+                                            {u.created}
+                                        </td>
+
+                                        <td>
+                                            <div className="admin-user-actions flex justify-end gap-2">
+                                                <IconButton
+                                                    color="blue"
+                                                    label={`View ${u.username}`}
+                                                    onClick={() => onView(u)}
+                                                >
+                                                    <Eye size={17} />
+                                                </IconButton>
+                                                <IconButton
+                                                    color="orange"
+                                                    label={u.status === "active" ? `Block ${u.username}` : `Unblock ${u.username}`}
+                                                    onClick={() => onBanToggle(u)}
+                                                >
+                                                    <Ban size={17} />
+                                                </IconButton>
+                                                <IconButton
+                                                    color="red"
+                                                    label={`Delete ${u.username}`}
+                                                    onClick={() => onDelete(u)}
+                                                >
+                                                    <Trash2 size={17} />
+                                                </IconButton>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* PAGINATION */}
-                <div className="flex items-center justify-between p-4 border-t text-sm text-gray-600">
+                <div className="admin-users-pagination flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <span>
-                        Showing {users.length} of {filteredUsers.length} users
+                        Page <strong>{totalPages === 0 ? 0 : page}</strong> of{" "}
+                        <strong>{totalPages}</strong>
                     </span>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <button
-                            disabled={page === 1}
-                            onClick={() => setPage((p) => p - 1)}
-                            className="px-3 py-1 border rounded disabled:opacity-40"
+                            type="button"
+                            disabled={page === 1 || totalPages === 0}
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            className="admin-page-button rounded-lg px-3 py-2"
                         >
                             Previous
                         </button>
 
                         {Array.from({ length: totalPages }).map((_, i) => (
                             <button
+                                type="button"
                                 key={i}
                                 onClick={() => setPage(i + 1)}
-                                className={`px-3 py-1 rounded ${page === i + 1
-                                    ? "bg-blue-600 text-white"
-                                    : "border"
-                                    }`}
+                                aria-current={page === i + 1 ? "page" : undefined}
+                                className={`admin-page-button rounded-lg px-3 py-2 ${
+                                    page === i + 1 ? "is-current" : ""
+                                }`}
                             >
                                 {i + 1}
                             </button>
                         ))}
 
                         <button
-                            disabled={page === totalPages}
-                            onClick={() => setPage((p) => p + 1)}
-                            className="px-3 py-1 border rounded disabled:opacity-40"
+                            type="button"
+                            disabled={page === totalPages || totalPages === 0}
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            className="admin-page-button rounded-lg px-3 py-2"
                         >
                             Next
                         </button>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     )
 }
 
 /* ===================== UI COMPONENTS ===================== */
 
+function SummaryCard({
+    icon,
+    label,
+    value,
+}: {
+    icon: React.ReactNode
+    label: string
+    value: number
+}) {
+    return (
+        <div className="admin-user-summary-card flex items-center gap-3 rounded-xl px-4 py-3">
+            <div className="admin-user-summary-icon flex h-10 w-10 items-center justify-center rounded-xl">
+                {icon}
+            </div>
+            <div>
+                <p>{label}</p>
+                <strong>{value}</strong>
+            </div>
+        </div>
+    )
+}
+
 function IconButton({
     children,
     onClick,
     color,
+    label,
 }: {
     children: React.ReactNode
     onClick: () => void
     color: "blue" | "orange" | "red"
+    label: string
 }) {
-    const colors = {
-        blue: "text-blue-600 hover:bg-blue-50",
-        orange: "text-orange-500 hover:bg-orange-50",
-        red: "text-red-600 hover:bg-red-50",
-    }
-
     return (
         <button
+            type="button"
             onClick={onClick}
-            className={`p-2 rounded-md transition ${colors[color]}`}
+            aria-label={label}
+            title={label}
+            className={`admin-user-icon-button ${color}`}
         >
             {children}
         </button>
@@ -348,27 +456,23 @@ function IconButton({
 }
 
 function RoleBadge({ role }: { role: string }) {
-    const styles: any = {
-        admin: "bg-red-100 text-red-700",
-        moderator: "bg-purple-100 text-purple-700",
-        user: "bg-gray-100 text-gray-700",
+    const labels: Record<string, string> = {
+        admin: "Admin",
+        moderator: "Moderator",
+        user: "User",
     }
 
     return (
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles[role]}`}>
-            {role}
+        <span className={`admin-user-badge role-${role}`}>
+            {labels[role] || role}
         </span>
     )
 }
 
 function StatusBadge({ status }: { status: string }) {
     return (
-        <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${status === "active"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-                }`}
-        >
+        <span className={`admin-user-badge status-${status}`}>
+            <span className="admin-status-dot" />
             {status === "active" ? "Active" : "Banned"}
         </span>
     )
